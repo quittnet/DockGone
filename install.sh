@@ -44,6 +44,12 @@ cat > "$APP/Contents/Info.plist" << 'EOF'
 </plist>
 EOF
 
+echo "Signing app bundle (ad-hoc)..."
+# Ad-hoc signing gives the bundle a stable identity TCC can pin permissions
+# to. Without it, every rebuild invalidates the Accessibility grant because
+# the binary hash changes.
+codesign --sign - --force --deep --preserve-metadata=identifier,entitlements "$APP"
+
 echo "Setting up launch at login..."
 mkdir -p "$HOME/Library/LaunchAgents"
 cat > "$PLIST" << EOF
@@ -72,6 +78,7 @@ launchctl load "$PLIST"
 echo ""
 echo "Done! DockGone is running and will start at login."
 echo ""
-echo "Now grant Input Monitoring permission:"
-echo "  System Settings → Privacy & Security → Input Monitoring"
-echo "  Click + and add: $APP"
+echo "Permissions to grant in System Settings → Privacy & Security:"
+echo "  • Accessibility       — needed for needs-attention detection"
+echo "  • Input Monitoring    — needed for the global hotkey"
+echo "  In each section, click + and add: $APP"

@@ -1,22 +1,21 @@
 import Cocoa
 import ApplicationServices
 
-// Per-app accessibility-based attention detection. Public surface:
-//   AttentionTracker.shared.start()                – call once at launch
-//   AttentionTracker.shared.attentionPIDs          – Set<pid_t> currently flagged
-//   AttentionTracker.shared.attentionApps          – sorted list of AttentionInfo
-//   AttentionTracker.didChangeNotification         – posts when the set changes
+// Polling attention detection. Public surface unchanged:
+//   AttentionTracker.shared.start()                 – call once at launch
+//   AttentionTracker.shared.attentionPIDs           – Set<pid_t> currently flagged
+//   AttentionTracker.shared.attentionApps           – sorted list of AttentionInfo
+//   AttentionTracker.didChangeNotification          – posts when the set changes
 //
-// Heuristic: when a window appears in a regular-policy app that is finished
-// launching but not currently active, treat it as an attention request (save
-// dialogs, "are you sure?" prompts, IDE breakpoints, etc.). This is the
-// closest reliable signal available via public API; the real
-// requestUserAttention(_:) call isn't exposed via Notification or KVO.
+// Single detection rule: an app gets flagged iff it has put up a modal
+// dialog/sheet that wasn't already visible the first time we observed it.
+// That covers the "unsaved-changes save prompt on quit" case — the dock-
+// bouncing replacement we exist to provide. Badges (unread mail, message
+// counts, etc.) are deliberately NOT a signal here — DockGone's job is to
+// surface the things that block work, not to mirror notification counts.
 //
-// Cleared when:
-//   - the app becomes active (NSWorkspaceDidActivateApplicationNotification)
-//   - the app terminates
-//   - a 5-minute backstop fires (catches edge cases where neither happens)
+// Every 5 seconds we re-walk the AX tree from scratch — no cached element
+// references — and emit a change if the flagged set differs from last tick.
 
 struct AttentionInfo {
     let pid: pid_t
@@ -30,14 +29,6 @@ final class AttentionTracker {
     static let shared = AttentionTracker()
     static let didChangeNotification = Notification.Name("DockGoneAttentionDidChange")
 
-    private var observers: [pid_t: AXObserver] = [:]
-    private var attention: [pid_t: AttentionInfo] = [:]
-    private var expiryTimers: [pid_t: Timer] = [:]
-    private let backstopInterval: TimeInterval = 300  // 5 minutes
-    private var started = false
-
-    private init() {}
-
     // MARK: - Public
 
     var attentionPIDs: Set<pid_t> { Set(attention.keys) }
@@ -50,172 +41,262 @@ final class AttentionTracker {
         guard !started else { return }
         started = true
 
-        // Prompt for Accessibility permission. If the user has already granted
-        // it, this is a no-op. If not, the system shows a one-time dialog
-        // pointing to System Settings — the tracker stays inert until allowed,
-        // and starts producing signals the next time DockGone launches.
+        // Prompt for Accessibility permission. If denied, every AX call
+        // silently returns failure and the tracker produces no signals.
         let key = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
         let options: NSDictionary = [key: true]
         _ = AXIsProcessTrustedWithOptions(options as CFDictionary)
 
-        for app in NSWorkspace.shared.runningApplications {
-            installObserver(for: app)
-        }
-
         let nc = NSWorkspace.shared.notificationCenter
-        nc.addObserver(self, selector: #selector(workspaceDidLaunch(_:)),
-                       name: NSWorkspace.didLaunchApplicationNotification, object: nil)
-        nc.addObserver(self, selector: #selector(workspaceDidTerminate(_:)),
-                       name: NSWorkspace.didTerminateApplicationNotification, object: nil)
         nc.addObserver(self, selector: #selector(workspaceDidActivate(_:)),
                        name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        nc.addObserver(self, selector: #selector(workspaceDidTerminate(_:)),
+                       name: NSWorkspace.didTerminateApplicationNotification, object: nil)
+
+        // Screen lock observers — Timer.scheduledTimer pauses naturally while
+        // the system sleeps, but it keeps firing while the screen is just
+        // locked. The AX rescan is wasted work in that state (the user can't
+        // see badges anyway) and prevents the CPU from settling into deeper
+        // idle states. Resume on unlock.
+        let dnc = DistributedNotificationCenter.default()
+        dnc.addObserver(self, selector: #selector(screenLocked),
+                        name: NSNotification.Name("com.apple.screenIsLocked"), object: nil)
+        dnc.addObserver(self, selector: #selector(screenUnlocked),
+                        name: NSNotification.Name("com.apple.screenIsUnlocked"), object: nil)
+
+        startRescanTimer()
+        rescan()
     }
 
-    // MARK: - AX observer lifecycle
-
-    private func installObserver(for app: NSRunningApplication) {
-        guard app.activationPolicy == .regular else { return }
-        let pid = app.processIdentifier
-        guard pid > 0, observers[pid] == nil else { return }
-
-        var observer: AXObserver?
-        let result = AXObserverCreate(pid, axCallback, &observer)
-        guard result == .success, let observer else { return }
-
-        let appElement = AXUIElementCreateApplication(pid)
-        let refcon = Unmanaged.passUnretained(self).toOpaque()
-        // Subscribe to two creation events:
-        //   AXWindowCreated — covers detached dialog-style windows
-        //   AXSheetCreated  — covers save sheets / alert sheets attached to a window
-        // Both are filtered through isAttentionWorthy(_:) below so we only
-        // surface sheets and dialog-subrole windows. Plain standard windows
-        // (status panels, helper windows, etc.) are ignored.
-        let r1 = AXObserverAddNotification(
-            observer, appElement, kAXWindowCreatedNotification as CFString, refcon
-        )
-        _ = AXObserverAddNotification(
-            observer, appElement, kAXSheetCreatedNotification as CFString, refcon
-        )
-        // Some apps reject AX observation entirely (sandboxed helpers, etc.);
-        // silently skip them — we just won't catch attention from those apps.
-        guard r1 == .success else { return }
-
-        CFRunLoopAddSource(CFRunLoopGetCurrent(),
-                           AXObserverGetRunLoopSource(observer),
-                           .commonModes)
-        observers[pid] = observer
+    private func startRescanTimer() {
+        rescanTimer?.invalidate()
+        // 5s is the sweet spot: badge updates from Mail/WhatsApp typically take
+        // 1-3s to render in the Dock anyway, and 5s is well below the human
+        // "did I see that?" threshold while halving the AX-IPC traffic vs. 2s.
+        // Each tick re-walks the Dock + every non-active regular-policy app.
+        rescanTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) {
+            [weak self] _ in self?.rescan()
+        }
     }
 
-    private func removeObserver(pid: pid_t) {
-        guard let obs = observers.removeValue(forKey: pid) else { return }
-        CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
-                              AXObserverGetRunLoopSource(obs),
-                              .commonModes)
+    @objc private func screenLocked() {
+        rescanTimer?.invalidate()
+        rescanTimer = nil
     }
+
+    @objc private func screenUnlocked() {
+        guard started, rescanTimer == nil else { return }
+        startRescanTimer()
+        rescan()
+    }
+
+    // MARK: - Private state
+
+    private var started = false
+    private var attention: [pid_t: AttentionInfo] = [:]
+    private var rescanTimer: Timer?
+    // Per-pid baseline: the set of attention-window fingerprints we saw the
+    // first time we observed each process. These are treated as phantom
+    // helpers (Office's invisible AXDialog), never flagged. Anything that
+    // appears later is new and gets flagged. Cleared when the app quits.
+    private var processBaseline: [pid_t: Set<String>] = [:]
+
+    private init() {}
 
     // MARK: - Workspace notifications
 
-    @objc private func workspaceDidLaunch(_ notification: Notification) {
-        guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
-                as? NSRunningApplication else { return }
-        installObserver(for: app)
-    }
-
-    @objc private func workspaceDidTerminate(_ notification: Notification) {
-        guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
-                as? NSRunningApplication else { return }
-        let pid = app.processIdentifier
-        removeObserver(pid: pid)
-        clearAttention(pid: pid)
-    }
-
-    @objc private func workspaceDidActivate(_ notification: Notification) {
-        guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
+    @objc private func workspaceDidActivate(_ note: Notification) {
+        guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey]
                 as? NSRunningApplication else { return }
         clearAttention(pid: app.processIdentifier)
     }
 
-    // MARK: - AX callback handling
-
-    fileprivate func handleAXNotification(name: String, element: AXUIElement) {
-        let isWindow = (name == (kAXWindowCreatedNotification as String))
-        let isSheet  = (name == (kAXSheetCreatedNotification  as String))
-        guard isWindow || isSheet else { return }
-
-        var pid: pid_t = 0
-        guard AXUIElementGetPid(element, &pid) == .success,
-              let app = NSRunningApplication(processIdentifier: pid),
-              app.activationPolicy == .regular,
-              app.isFinishedLaunching,
-              !app.isActive
-        else { return }
-
-        // Sheet events are intrinsically attention-worthy. Window events
-        // need a role/subrole check so helper/utility/status windows don't
-        // get flagged.
-        if isWindow && !Self.isAttentionWorthyWindow(element) { return }
-
-        markAttention(for: app)
-    }
-
-    // Whitelist: only AXSheet (role), or AXDialog / AXSystemDialog (subrole).
-    // Everything else — AXStandardWindow, AXFloatingWindow, AXUtilityWindow,
-    // unknown — is treated as a normal app window, not an attention signal.
-    private static func isAttentionWorthyWindow(_ element: AXUIElement) -> Bool {
-        var roleRef:    AnyObject?
-        var subroleRef: AnyObject?
-        AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleRef)
-        AXUIElementCopyAttributeValue(element, kAXSubroleAttribute as CFString, &subroleRef)
-        let role    = roleRef    as? String ?? ""
-        let subrole = subroleRef as? String ?? ""
-        if role == (kAXSheetRole as String) { return true }
-        if subrole == (kAXDialogSubrole as String) { return true }
-        if subrole == (kAXSystemDialogSubrole as String) { return true }
-        return false
-    }
-
-    private func markAttention(for app: NSRunningApplication) {
+    @objc private func workspaceDidTerminate(_ note: Notification) {
+        guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey]
+                as? NSRunningApplication else { return }
         let pid = app.processIdentifier
-        let isNew = (attention[pid] == nil)
-        attention[pid] = AttentionInfo(
+        processBaseline.removeValue(forKey: pid)
+        clearAttention(pid: pid)
+    }
+
+    // MARK: - Rescan
+
+    private func rescan() {
+        var fresh: [pid_t: AttentionInfo] = [:]
+
+        for app in NSWorkspace.shared.runningApplications {
+            guard app.activationPolicy == .regular,
+                  app.isFinishedLaunching,
+                  !app.isActive
+            else { continue }
+            let pid = app.processIdentifier
+            guard pid > 0 else { continue }
+            if appHasFlaggableAttentionWindow(pid: pid) {
+                record(app: app, into: &fresh)
+            }
+        }
+
+        let oldKeys = Set(attention.keys)
+        let newKeys = Set(fresh.keys)
+        attention = fresh
+        if oldKeys != newKeys { post() }
+    }
+
+    private func record(app: NSRunningApplication,
+                        into fresh: inout [pid_t: AttentionInfo]) {
+        let pid = app.processIdentifier
+        fresh[pid] = AttentionInfo(
             pid: pid,
             bundleID: app.bundleIdentifier,
             appName: app.localizedName ?? "(unknown)",
             appIcon: app.icon,
             firstSeen: attention[pid]?.firstSeen ?? Date()
         )
-        scheduleBackstop(for: pid)
-        if isNew { post() }
+    }
+
+    // MARK: - Per-app window walk
+
+    // True if this app has any attention-shaped window that wasn't present
+    // the first time we observed the process. The first observation captures
+    // the baseline (phantom helpers); anything new is the user-relevant case.
+    func appHasFlaggableAttentionWindow(pid: pid_t) -> Bool {
+        let current = currentAttentionFingerprints(pid: pid)
+        if let baseline = processBaseline[pid] {
+            return !current.subtracting(baseline).isEmpty
+        }
+        // First sight: bank everything currently visible as the phantom set.
+        processBaseline[pid] = current
+        return false
+    }
+
+    // Collect a stable fingerprint of every window/sheet on this app that
+    // looks structurally like an attention surface. Fingerprint includes
+    // size (Office phantoms have fixed sizes, real save dialogs vary) so a
+    // real prompt with the same role/subrole as a phantom still hashes
+    // differently and bypasses the baseline.
+    func currentAttentionFingerprints(pid: pid_t) -> Set<String> {
+        var fps: Set<String> = []
+        let element = AXUIElementCreateApplication(pid)
+        guard let windows = copyAttr(element, kAXWindowsAttribute as String)
+                as? [AXUIElement] else { return fps }
+        for w in windows {
+            if isRealAttentionSurface(w), let fp = fingerprint(for: w) {
+                fps.insert(fp)
+            }
+            if let sheets = copyAttr(w, "AXSheets") as? [AXUIElement] {
+                for s in sheets where isRealAttentionSurface(s) {
+                    if let fp = fingerprint(for: s) { fps.insert(fp) }
+                }
+            }
+            if let children = copyAttr(w, kAXChildrenAttribute as String)
+                    as? [AXUIElement] {
+                for c in children {
+                    let role = (copyAttr(c, kAXRoleAttribute as String)
+                        as? String) ?? ""
+                    if role == (kAXSheetRole as String),
+                       isRealAttentionSurface(c),
+                       let fp = fingerprint(for: c) { fps.insert(fp) }
+                }
+            }
+        }
+        return fps
+    }
+
+    private func fingerprint(for w: AXUIElement) -> String? {
+        let role = (copyAttr(w, kAXRoleAttribute as String) as? String) ?? ""
+        let subrole = (copyAttr(w, kAXSubroleAttribute as String) as? String) ?? ""
+        let title = (copyAttr(w, kAXTitleAttribute as String) as? String) ?? ""
+        let size = windowFrame(w).map { "\(Int($0.width))x\(Int($0.height))" } ?? "?"
+        return "\(role)|\(subrole)|\(title)|\(size)"
+    }
+
+    // A window/sheet is a real attention surface iff:
+    //   1. Its role is AXSheet, OR its subrole is AXDialog / AXSystemDialog
+    //      AND it's modal. The modal requirement matters because Microsoft
+    //      Word labels its main document window subrole=AXDialog modal=false
+    //      — that's a Word quirk, not an attention request. Real save / quit /
+    //      alert prompts are always modal=true.
+    //   2. It has a visible frame on at least one screen.
+    //   3. It has at least one AXButton descendant.
+    func isRealAttentionSurface(_ w: AXUIElement) -> Bool {
+        let role = (copyAttr(w, kAXRoleAttribute as String) as? String) ?? ""
+        let subrole = (copyAttr(w, kAXSubroleAttribute as String) as? String) ?? ""
+        let isSheet = role == (kAXSheetRole as String)
+        let isDialog = subrole == (kAXDialogSubrole as String)
+            || subrole == (kAXSystemDialogSubrole as String)
+        guard isSheet || isDialog else { return false }
+        if isDialog && !isSheet {
+            let modal = (copyAttr(w, kAXModalAttribute as String) as? Bool) ?? false
+            guard modal else { return false }
+        }
+
+        if let frame = windowFrame(w) {
+            if frame.width < 80 || frame.height < 40 { return false }
+            if !frameIsOnScreen(frame) { return false }
+        } else {
+            if !isSheet { return false }
+        }
+        return hasButtonDescendant(w, maxDepth: 3)
+    }
+
+    private func windowFrame(_ w: AXUIElement) -> CGRect? {
+        var posRef: AnyObject?
+        var sizeRef: AnyObject?
+        let pr = AXUIElementCopyAttributeValue(w, kAXPositionAttribute as CFString, &posRef)
+        let sr = AXUIElementCopyAttributeValue(w, kAXSizeAttribute as CFString, &sizeRef)
+        guard pr == .success, sr == .success,
+              let posValue = posRef, let sizeValue = sizeRef,
+              CFGetTypeID(posValue) == AXValueGetTypeID(),
+              CFGetTypeID(sizeValue) == AXValueGetTypeID() else { return nil }
+        var point = CGPoint.zero
+        var size = CGSize.zero
+        AXValueGetValue(posValue as! AXValue, .cgPoint, &point)
+        AXValueGetValue(sizeValue as! AXValue, .cgSize, &size)
+        return CGRect(origin: point, size: size)
+    }
+
+    private func frameIsOnScreen(_ frame: CGRect) -> Bool {
+        // AX positions are in screen coordinates with origin at the top-left
+        // of the primary display; NSScreen uses Cartesian with origin at the
+        // bottom-left. Comparing widths/heights and a small intersection
+        // tolerance is enough for the phantom check — we don't need precision.
+        for screen in NSScreen.screens {
+            let s = screen.frame
+            // Reject windows wholly off any screen's bounding box.
+            if frame.maxX > s.minX, frame.minX < s.maxX,
+               frame.maxY > s.minY - 4000, frame.minY < s.maxY + 4000 {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func hasButtonDescendant(_ element: AXUIElement, maxDepth: Int) -> Bool {
+        guard maxDepth > 0,
+              let children = copyAttr(element, kAXChildrenAttribute as String)
+                as? [AXUIElement] else { return false }
+        for c in children {
+            if (copyAttr(c, kAXRoleAttribute as String) as? String)
+                == (kAXButtonRole as String) { return true }
+            if hasButtonDescendant(c, maxDepth: maxDepth - 1) { return true }
+        }
+        return false
+    }
+
+    // MARK: - Utilities
+
+    private func copyAttr(_ element: AXUIElement, _ name: String) -> AnyObject? {
+        var out: AnyObject?
+        return AXUIElementCopyAttributeValue(element, name as CFString, &out) == .success
+            ? out : nil
     }
 
     private func clearAttention(pid: pid_t) {
         guard attention.removeValue(forKey: pid) != nil else { return }
-        expiryTimers.removeValue(forKey: pid)?.invalidate()
         post()
-    }
-
-    private func scheduleBackstop(for pid: pid_t) {
-        expiryTimers[pid]?.invalidate()
-        expiryTimers[pid] = Timer.scheduledTimer(
-            withTimeInterval: backstopInterval, repeats: false
-        ) { [weak self] _ in
-            self?.clearAttention(pid: pid)
-        }
     }
 
     private func post() {
         NotificationCenter.default.post(name: Self.didChangeNotification, object: self)
-    }
-}
-
-// C function pointer — cannot capture context, so the tracker self is
-// threaded through the refcon parameter via Unmanaged.passUnretained.
-// AttentionTracker is a process-wide singleton so unretained is safe.
-private let axCallback: AXObserverCallback = { _, element, notification, refcon in
-    guard let refcon else { return }
-    let tracker = Unmanaged<AttentionTracker>.fromOpaque(refcon).takeUnretainedValue()
-    let name = notification as String
-    DispatchQueue.main.async {
-        tracker.handleAXNotification(name: name, element: element)
     }
 }

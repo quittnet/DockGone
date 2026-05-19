@@ -28,8 +28,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenuBar()
+        installHotKeyHandler()
         registerHotKey()
-        applyBounceSuppression()
+        applyBounceSuppressionIfNeeded()
         AttentionTracker.shared.start()
         // Re-register the global hotkey whenever the user changes settings,
         // and apply the bounce-suppression toggle when it changes.
@@ -122,7 +123,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func activateAttentionApp(_ sender: NSMenuItem) {
         guard let n = sender.representedObject as? NSNumber else { return }
         let pid = pid_t(n.intValue)
-        NSRunningApplication(processIdentifier: pid)?.activate()
+        guard let app = NSRunningApplication(processIdentifier: pid) else { return }
+        // activateAllWindows is what brings a hidden modal sheet to the front
+        // (and switches Space if the app's main window is on a different one).
+        // Plain activate() leaves the dialog behind whatever's covering it.
+        app.activate(options: [.activateAllWindows])
     }
 
     // MARK: - Dock bounce suppression
@@ -136,6 +141,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         p.executableURL = URL(fileURLWithPath: "/bin/sh")
         p.arguments = ["-c", cmd]
         try? p.run()
+    }
+
+    // Same as `applyBounceSuppression`, but skips the `killall Dock` (and the
+    // accompanying Dock relaunch flash) when the live Dock pref already matches
+    // our desired state. Used at launch so opening DockGone doesn't always
+    // restart the Dock.
+    private func applyBounceSuppressionIfNeeded() {
+        let desired = Prefs.shared.suppressBouncing
+        let current = currentNoBouncing()
+        guard current != desired else { return }
+        applyBounceSuppression()
+    }
+
+    private func currentNoBouncing() -> Bool {
+        let pipe = Pipe()
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/defaults")
+        p.arguments = ["read", "com.apple.dock", "no-bouncing"]
+        p.standardOutput = pipe
+        p.standardError = Pipe()
+        try? p.run()
+        p.waitUntilExit()
+        let out = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return out == "1"
     }
 
     private func applyBounceSuppressionIfChanged() {
@@ -160,7 +190,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Hotkeys
 
-    private func registerHotKey() {
+    // Install the Carbon event handler exactly once at launch. Previously this
+    // ran inside registerHotKey(), which re-fires on every Prefs change —
+    // leaving stale EventHandlerRefs and a stack of handlers that each
+    // dispatched the hotkey callback.
+    private func installHotKeyHandler() {
+        guard eventHandlerRef == nil else { return }
         var eventType = EventTypeSpec(
             eventClass: OSType(kEventClassKeyboard),
             eventKind: UInt32(kEventHotKeyPressed)
@@ -196,6 +231,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             },
             1, &eventType, ptr, &eventHandlerRef
         )
+    }
+
+    private func registerHotKey() {
         let mainID = EventHotKeyID(signature: 0x444B4C43, id: 1)
         let key  = Prefs.shared.hotkeyKeyCode
         let mods = Prefs.shared.hotkeyModifiers
@@ -392,7 +430,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(.separator())
 
-        let prefsItem = NSMenuItem(title: "Preferences…",
+        let prefsItem = NSMenuItem(title: "Preferences",
                                    action: #selector(showPreferences),
                                    keyEquivalent: ",")
         prefsItem.target = self
@@ -406,11 +444,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         loginItem.state = loginEnabled ? .on : .off
         menu.addItem(loginItem)
 
+        let diagItem = NSMenuItem(title: "Diagnose Attention…",
+                                  action: #selector(runDiagnoseAttention),
+                                  keyEquivalent: "")
+        diagItem.target = self
+        menu.addItem(diagItem)
+
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Quit DockGone",
                                 action: #selector(NSApplication.terminate(_:)),
                                 keyEquivalent: "q"))
         statusItem?.menu = menu
+    }
+
+    @objc private func runDiagnoseAttention() {
+        DiagnoseAttention.writeReport()
     }
 
     // MARK: - Dock Hide
