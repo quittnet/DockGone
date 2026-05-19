@@ -22,7 +22,7 @@ class AddAppPanel: NSPanel {
 
     init(apps: [DockApp]) {
         allApps = apps
-        let screen = NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let screen = NSScreen.screenWithMouse.frame
         let w: CGFloat = 720
         let h: CGFloat = 560
         super.init(

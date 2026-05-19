@@ -37,7 +37,7 @@ class DockManagePanel: NSPanel {
     init(apps: [DockApp]) {
         self.apps = apps
 
-        let screen = NSScreen.main?.frame ?? .init(x: 0, y: 0, width: 1440, height: 900)
+        let screen = NSScreen.screenWithMouse.frame
         let (cols, rows) = Self.gridFor(count: apps.count, screen: screen)
         let (w, h) = Self.sizeFor(cols: cols, rows: rows)
 
@@ -433,8 +433,10 @@ class DockManagePanel: NSPanel {
     }
 
     private func resizeAndRebuildAfterCountChange() {
-        let (cols, rows) = Self.gridFor(count: apps.count,
-                                        screen: NSScreen.main?.frame ?? .zero)
+        // Resize uses the panel's current screen (not the mouse's) so deleting
+        // an app doesn't make the panel hop to a different display.
+        let currentScreen = self.screen?.frame ?? NSScreen.screenWithMouse.frame
+        let (cols, rows) = Self.gridFor(count: apps.count, screen: currentScreen)
         numCols = cols
         numRows = rows
         let (w, h) = Self.sizeFor(cols: cols, rows: rows)

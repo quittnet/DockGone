@@ -1,5 +1,17 @@
 import Cocoa
 
+// Screen containing the current mouse cursor — used to position panels on
+// the display the user is actively looking at, instead of always falling
+// back to NSScreen.main (which is the menu-bar/primary display).
+extension NSScreen {
+    static var screenWithMouse: NSScreen {
+        let loc = NSEvent.mouseLocation
+        return NSScreen.screens.first { $0.frame.contains(loc) }
+            ?? NSScreen.main
+            ?? NSScreen.screens.first!
+    }
+}
+
 // Static layout knobs. iconSize comes from Prefs (instance property);
 // everything else is derived or kept constant.
 private let kSlotPad:  CGFloat = 10
@@ -40,7 +52,7 @@ class SwitcherPanel: NSPanel {
         self.position  = p.position
         self.labelMode = p.labelMode
 
-        let screen = NSScreen.main?.frame ?? .init(x: 0, y: 0, width: 1440, height: 900)
+        let screen = NSScreen.screenWithMouse.frame
 
         // Single row if it fits within 92% of the screen width; otherwise wrap.
         let maxW = screen.width * 0.92
