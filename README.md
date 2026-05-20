@@ -21,6 +21,8 @@ Runs as a menu-bar utility (no Dock icon). On hotkey, it reads `~/Library/Prefer
 
 A quick tap-and-release pre-selects the first real app. Panel is a single row when it fits, otherwise wraps to a grid; position is configurable (top/center/bottom).
 
+![Switcher panel](screenshots/02-switcher.png)
+
 ## Attention tracker
 
 The Dock normally bounces apps that pop up a save-on-quit prompt or other modal dialog, which is useless when the Dock is hidden. DockGone disables the system bounce and replaces it with:
@@ -48,6 +50,16 @@ Toggle **Suppress Dock bouncing** off in Preferences to restore native bouncing.
 - **Edit Dock** — grid view of current Dock apps. Drag to reorder, click + `Delete` to remove, or click the per-tile **✕** badge (with confirmation). Tiles jiggle in edit mode.
 - **Preferences**, **Launch at Login**, **Quit**.
 
+![Menu bar dropdown](screenshots/01-menu.png)
+
+### Edit Dock
+
+![Edit Dock](screenshots/04-edit-dock.png)
+
+### Add to Dock
+
+![Add to Dock](screenshots/05-add-to-dock.png)
+
 ## Preferences
 
 | Setting | Options | Default |
@@ -60,6 +72,8 @@ Toggle **Suppress Dock bouncing** off in Preferences to restore native bouncing.
 | Include Trash | Adds a Trash tile at end | On |
 
 Persisted in `UserDefaults`. Hotkey changes re-register immediately.
+
+![Preferences window](screenshots/03-preferences.png)
 
 ## Installation
 
