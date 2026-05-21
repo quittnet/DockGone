@@ -1,6 +1,6 @@
 # DockGone
 
-A keyboard-driven launcher for the apps in your Dock that **aren't currently open**. Press ⌥⇥, pick one, release — it launches.
+A keyboard-driven launcher for the apps in your Dock that **aren't currently open**. Press ⌥⇥, pick one, release it launches.
 
 > ⚠️ Not a replacement for **⌘⇥** (Command-Tab). ⌘⇥ switches between *running* apps; ⌥⇥ launches ones that *aren't*. They complement each other.
 
