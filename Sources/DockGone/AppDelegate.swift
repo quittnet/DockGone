@@ -9,6 +9,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var lastAttentionCount: Int = 0
     private var switcherPanel: SwitcherPanel?
     private var hotKeyRef: EventHotKeyRef?
+    private var backtickHotKeyRef: EventHotKeyRef?
     private var eventHandlerRef: EventHandlerRef?
     private var navHotKeyRefs: [EventHotKeyRef?] = Array(repeating: nil, count: 6)
     private var mouseMonitor: Any?
@@ -186,6 +187,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func unregisterMainHotKey() {
         if let ref = hotKeyRef { UnregisterEventHotKey(ref); hotKeyRef = nil }
+        if let ref = backtickHotKeyRef { UnregisterEventHotKey(ref); backtickHotKeyRef = nil }
     }
 
     // MARK: - Hotkeys
@@ -224,6 +226,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     case 5: me.switcherPanel?.moveDown()
                     case 6: me.removeMonitors(); me.switcherPanel?.dismiss()
                     case 7: me.switcherPanel?.cyclePrev()
+                    case 8: me.handleBacktickHotKey()
                     default: break
                     }
                 }
@@ -234,11 +237,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func registerHotKey() {
-        let mainID = EventHotKeyID(signature: 0x444B4C43, id: 1)
-        let key  = Prefs.shared.hotkeyKeyCode
+        let sig: OSType = 0x444B4C43
         let mods = Prefs.shared.hotkeyModifiers
-        RegisterEventHotKey(key, mods, mainID,
+        let mainID = EventHotKeyID(signature: sig, id: 1)
+        RegisterEventHotKey(Prefs.shared.hotkeyKeyCode, mods, mainID,
                             GetApplicationEventTarget(), 0, &hotKeyRef)
+        // Modifier + ` is the backwards-cycle companion to modifier + Tab,
+        // matching macOS Cmd+`/Cmd+Shift+Tab semantics.
+        let backtickID = EventHotKeyID(signature: sig, id: 8)
+        RegisterEventHotKey(UInt32(kVK_ANSI_Grave), mods, backtickID,
+                            GetApplicationEventTarget(), 0, &backtickHotKeyRef)
     }
 
     // Registered when the panel is visible, removed on dismiss.
@@ -288,6 +296,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             panel.cycleNext()
         } else {
             showSwitcher()
+        }
+    }
+
+    func handleBacktickHotKey() {
+        if let panel = switcherPanel, panel.isVisible {
+            panel.cyclePrev()
+        } else {
+            showSwitcher()
+            switcherPanel?.cyclePrev()
         }
     }
 
@@ -367,9 +384,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func pollTabRepeat() {
-        let key = CGKeyCode(Prefs.shared.hotkeyKeyCode)
-        let tabDown = CGEventSource.keyState(.combinedSessionState, key: key)
-        guard tabDown else {
+        let tabKey = CGKeyCode(Prefs.shared.hotkeyKeyCode)
+        let graveKey = CGKeyCode(kVK_ANSI_Grave)
+        let tabDown = CGEventSource.keyState(.combinedSessionState, key: tabKey)
+        let graveDown = CGEventSource.keyState(.combinedSessionState, key: graveKey)
+        guard tabDown || graveDown else {
             tabHeldSince = nil
             nextTabRepeatAt = nil
             return
@@ -381,7 +400,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         if let next = nextTabRepeatAt, now >= next {
-            if NSEvent.modifierFlags.contains(.shift) {
+            if graveDown || NSEvent.modifierFlags.contains(.shift) {
                 switcherPanel?.cyclePrev()
             } else {
                 switcherPanel?.cycleNext()

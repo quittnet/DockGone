@@ -171,9 +171,10 @@ final class AttentionTracker {
 
     // Collect a stable fingerprint of every window/sheet on this app that
     // looks structurally like an attention surface. Fingerprint includes
-    // size (Office phantoms have fixed sizes, real save dialogs vary) so a
-    // real prompt with the same role/subrole as a phantom still hashes
-    // differently and bypasses the baseline.
+    // size and the sorted set of button titles: phantoms typically have no
+    // buttons or generic ones, real save/quit prompts carry "Save"/"Don't
+    // Save"/"Discard" etc., so a real prompt with the same role+subrole+size
+    // as a phantom still hashes differently and bypasses the baseline.
     func currentAttentionFingerprints(pid: pid_t) -> Set<String> {
         var fps: Set<String> = []
         let element = AXUIElementCreateApplication(pid)
@@ -207,7 +208,25 @@ final class AttentionTracker {
         let subrole = (copyAttr(w, kAXSubroleAttribute as String) as? String) ?? ""
         let title = (copyAttr(w, kAXTitleAttribute as String) as? String) ?? ""
         let size = windowFrame(w).map { "\(Int($0.width))x\(Int($0.height))" } ?? "?"
-        return "\(role)|\(subrole)|\(title)|\(size)"
+        let buttons = collectButtonTitles(w, maxDepth: 3).sorted().joined(separator: ",")
+        return "\(role)|\(subrole)|\(title)|\(size)|\(buttons)"
+    }
+
+    private func collectButtonTitles(_ element: AXUIElement, maxDepth: Int) -> [String] {
+        guard maxDepth > 0,
+              let children = copyAttr(element, kAXChildrenAttribute as String)
+                as? [AXUIElement] else { return [] }
+        var titles: [String] = []
+        for c in children {
+            let role = (copyAttr(c, kAXRoleAttribute as String) as? String) ?? ""
+            if role == (kAXButtonRole as String),
+               let t = copyAttr(c, kAXTitleAttribute as String) as? String,
+               !t.isEmpty {
+                titles.append(t)
+            }
+            titles.append(contentsOf: collectButtonTitles(c, maxDepth: maxDepth - 1))
+        }
+        return titles
     }
 
     // A window/sheet is a real attention surface iff:

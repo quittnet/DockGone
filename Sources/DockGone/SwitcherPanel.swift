@@ -15,11 +15,11 @@ extension NSScreen {
 // Static layout knobs. iconSize comes from Prefs (instance property);
 // everything else is derived or kept constant.
 private let kSlotPad:  CGFloat = 10
-private let kLabelH:   CGFloat = 20
-private let kLabelGap: CGFloat = 3
+private let kLabelH:   CGFloat = 17
+private let kLabelGap: CGFloat = 2
 private let kRowGap:   CGFloat = 8
-private let kSidePad:  CGFloat = 22
-private let kVPad:     CGFloat = 8
+private let kSidePad:  CGFloat = 8
+private let kVPad:     CGFloat = 4
 private let kCorner:   CGFloat = 22
 
 class SwitcherPanel: NSPanel {
@@ -56,8 +56,8 @@ class SwitcherPanel: NSPanel {
         let screen = mouseScreen.frame
         let visibleFrame = mouseScreen.visibleFrame
 
-        // Single row if it fits within 92% of the screen width; otherwise wrap.
-        let maxW = screen.width * 0.92
+        // Single row if it fits within the screen width; otherwise wrap.
+        let maxW = screen.width
         let singleRowW = kSidePad * 2 + CGFloat(apps.count) * slotW
 
         let cols: Int
