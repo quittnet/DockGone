@@ -29,7 +29,7 @@ The Dock normally bounces apps that pop up a save-on-quit prompt or other modal 
 
 - **Red dot** on the menu-bar icon when one or more inactive apps have a modal prompt waiting.
 - **Attention rows** at the top of the menu — click one to bring the app forward (uses `.activateAllWindows`, so the dialog comes to the front even if it was hidden behind another window or on a different Space).
-- **Red glow ring** in the switcher; attention apps sort to the front, so ⌥⇥ lands on them first. Selecting one activates the existing process (revealing the dialog) instead of launching fresh.
+
 
 **Detection rule** (deliberately conservative — only "unsaved changes on close" type prompts, never badges or unread counts):
 
