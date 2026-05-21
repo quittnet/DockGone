@@ -10,13 +10,14 @@ final class Prefs {
     static let didChangeNotification = Notification.Name("DockGonePrefsDidChange")
 
     enum Position: String, CaseIterable, Identifiable {
-        case top, center, bottom
+        case top, center, bottom, realDock
         var id: String { rawValue }
         var label: String {
             switch self {
-            case .top:    return "Top"
-            case .center: return "Center"
-            case .bottom: return "Bottom"
+            case .top:      return "Top"
+            case .center:   return "Center"
+            case .bottom:   return "Bottom"
+            case .realDock: return "Real Dock"
             }
         }
     }

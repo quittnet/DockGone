@@ -52,7 +52,9 @@ class SwitcherPanel: NSPanel {
         self.position  = p.position
         self.labelMode = p.labelMode
 
-        let screen = NSScreen.screenWithMouse.frame
+        let mouseScreen = NSScreen.screenWithMouse
+        let screen = mouseScreen.frame
+        let visibleFrame = mouseScreen.visibleFrame
 
         // Single row if it fits within 92% of the screen width; otherwise wrap.
         let maxW = screen.width * 0.92
@@ -72,16 +74,44 @@ class SwitcherPanel: NSPanel {
         let w = kSidePad * 2 + CGFloat(cols) * slotW
         let h = kVPad * 2 + CGFloat(rows) * slotH + CGFloat(rows - 1) * kRowGap
 
+        let originX: CGFloat
         let originY: CGFloat
         switch position {
         case .top:
+            originX = screen.midX - w / 2
             originY = screen.maxY - h - screen.height * 0.10
         case .center:
+            originX = screen.midX - w / 2
             originY = screen.midY - h / 2 + screen.height * 0.05
         case .bottom:
+            originX = screen.midX - w / 2
             originY = screen.minY + screen.height * 0.12
+        case .realDock:
+            // Align the panel center with the Dock area, then clamp so the
+            // panel — corners and all — never spills past the screen edge.
+            // visibleFrame excludes the Dock (and menu bar), so the gap
+            // between frame and visibleFrame on the relevant edge is the
+            // Dock's thickness. Auto-hide makes that ~0; the 80pt floor
+            // keeps the panel near the edge in that case.
+            let orientation = UserDefaults(suiteName: "com.apple.dock")?
+                .string(forKey: "orientation") ?? "bottom"
+            let edge: CGFloat = 4
+            switch orientation {
+            case "left":
+                let dockW = max(visibleFrame.minX - screen.minX, 80)
+                originX = max(screen.minX + edge, screen.minX + dockW / 2 - w / 2)
+                originY = screen.midY - h / 2
+            case "right":
+                let dockW = max(screen.maxX - visibleFrame.maxX, 80)
+                originX = min(screen.maxX - w - edge, screen.maxX - dockW / 2 - w / 2)
+                originY = screen.midY - h / 2
+            default:
+                let dockH = max(visibleFrame.minY - screen.minY, 80)
+                originX = screen.midX - w / 2
+                originY = max(screen.minY + edge, screen.minY + dockH / 2 - h / 2)
+            }
         }
-        let origin = NSPoint(x: screen.midX - w / 2, y: originY)
+        let origin = NSPoint(x: originX, y: originY)
 
         super.init(
             contentRect: .init(origin: origin, size: .init(width: w, height: h)),
@@ -386,6 +416,15 @@ class SlotView: NSView {
         let imgView = NSImageView(frame: iconRect)
         imgView.image        = icon
         imgView.imageScaling = .scaleProportionallyUpOrDown
+        // Soft drop shadow so icons read as anchored objects against the glass
+        // instead of washing into it. Mirrors the depth the real Dock uses.
+        // masksToBounds must stay off or the shadow gets clipped.
+        imgView.wantsLayer = true
+        imgView.layer?.masksToBounds = false
+        imgView.layer?.shadowColor   = NSColor.black.cgColor
+        imgView.layer?.shadowOpacity = 0.45
+        imgView.layer?.shadowOffset  = CGSize(width: 0, height: -2)
+        imgView.layer?.shadowRadius  = 5
         addSubview(imgView)
 
         nameLabel.alignment         = .center

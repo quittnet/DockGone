@@ -19,7 +19,7 @@ Runs as a menu-bar utility (no Dock icon). On hotkey, it reads `~/Library/Prefer
 | Click icon / release modifier | Launch |
 | `Esc`, click outside, or the trailing **✕** tile | Dismiss |
 
-A quick tap-and-release pre-selects the first real app. Panel is a single row when it fits, otherwise wraps to a grid; position is configurable (top/center/bottom).
+A quick tap-and-release pre-selects the first real app. Panel is a single row when it fits, otherwise wraps to a grid; position is configurable (top/center/bottom, or **Real Dock** to mirror wherever macOS has the Dock — bottom/left/right edge).
 
 ![Switcher panel](screenshots/02-switcher.png)
 
@@ -66,7 +66,7 @@ Toggle **Suppress Dock bouncing** off in Preferences to restore native bouncing.
 |---|---|---|
 | Icon size | 48–128 pt | 64 pt |
 | Glass tint | 8 neutral presets | ~10% black |
-| Panel position | Top / Center / Bottom | Center |
+| Panel position | Top / Center / Bottom / Real Dock | Center |
 | App labels | Selected / Always / Never | Selected |
 | Hotkey | Any modifier(s) + key | ⌥⇥ |
 | Include Trash | Adds a Trash tile at end | On |
