@@ -66,80 +66,210 @@
     <text x="540" y="600">for Women</text>
   </g>
 
-  <!-- LEFT PANEL: JUJITSU -->
+  <!-- LEFT PANEL: JUJITSU - two women grip-fighting in gi -->
   <g transform="translate(90 670)">
     <rect width="425" height="425" rx="20" ry="20" fill="#F5EBD8"/>
-    <g transform="translate(72 60)" fill="#1A0A12">
-      <!-- thrower head -->
-      <circle cx="95" cy="120" r="22"/>
-      <!-- thrower torso curved -->
-      <path d="M62 148 Q 95 132 128 148 L 135 215 Q 115 232 90 232 L 62 232 Q 56 188 62 148 Z"/>
-      <!-- planted leg -->
-      <path d="M78 225 Q 72 260 65 290 L 90 290 Q 96 255 100 230 Z"/>
-      <!-- back leg sweep -->
-      <path d="M110 220 Q 150 240 195 252 L 188 275 Q 138 268 95 250 Z"/>
-      <!-- arm grip -->
-      <path d="M120 160 Q 158 138 185 115 L 175 100 Q 138 122 110 152 Z"/>
+    <!-- Subtle dojo floor -->
+    <rect x="0" y="310" width="425" height="50" fill="#D9CDB2" opacity="0.7"/>
+    <line x1="0" y1="312" x2="425" y2="312" stroke="#C9A961" stroke-width="1.5" opacity="0.6"/>
+    <line x1="0" y1="332" x2="425" y2="332" stroke="#C9A961" stroke-width="0.8" opacity="0.3"/>
+    <line x1="0" y1="352" x2="425" y2="352" stroke="#C9A961" stroke-width="0.8" opacity="0.3"/>
 
-      <!-- opponent (flipping over) -->
-      <circle cx="225" cy="55" r="20"/>
-      <path d="M198 75 Q 230 68 258 88 L 265 138 Q 240 148 210 135 Z"/>
-      <!-- opponent arms back -->
-      <path d="M198 90 Q 160 100 132 115 L 142 130 Q 175 118 205 105 Z"/>
-      <!-- opponent legs up -->
-      <path d="M248 100 Q 282 75 282 35 L 268 30 Q 262 65 235 92 Z"/>
-      <path d="M258 118 Q 285 110 285 85 L 272 82 Q 268 100 248 110 Z"/>
+    <!-- LEFT FIGHTER (purple belt, facing right, attacking with collar grip) -->
+    <g transform="translate(70 60)">
+      <!-- Hair behind / ponytail down back -->
+      <path d="M22 18 Q 8 32 10 70 Q 12 95 22 110 L 36 105 Q 32 80 35 60 Q 38 38 42 22 Z" fill="#2C1810"/>
+      <!-- Head -->
+      <ellipse cx="44" cy="34" rx="22" ry="24" fill="#E8B89A"/>
+      <!-- Hair top -->
+      <path d="M22 22 Q 44 6 66 22 Q 66 32 60 40 Q 56 22 44 20 Q 30 22 26 36 Q 22 30 22 22 Z" fill="#2C1810"/>
+      <!-- Eye -->
+      <ellipse cx="54" cy="34" rx="2.2" ry="2.8" fill="#1A0A12"/>
+      <!-- Brow (determined) -->
+      <path d="M50 28 L 60 28" stroke="#2C1810" stroke-width="2" stroke-linecap="round"/>
+      <!-- Mouth -->
+      <path d="M50 46 L 60 45" stroke="#5C1A2B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <!-- Neck -->
+      <rect x="36" y="54" width="16" height="14" fill="#E8B89A"/>
 
-      <!-- motion arc -->
-      <path d="M40 200 Q 140 50 280 25" fill="none" stroke="#1A0A12" stroke-width="3" opacity="0.3" stroke-linecap="round" stroke-dasharray="4 10"/>
+      <!-- GI back sleeve (left arm pulling opponent's sleeve back) -->
+      <path d="M16 78 Q 0 95 -10 130 L 6 138 Q 18 110 28 88 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- left hand gripping (back arm) -->
+      <ellipse cx="-4" cy="135" rx="10" ry="8" fill="#E8B89A"/>
+
+      <!-- GI torso -->
+      <path d="M22 70 Q 44 64 66 70 L 74 178 Q 72 184 66 186 L 22 186 Q 16 184 14 178 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.5"/>
+      <!-- lapel V -->
+      <path d="M30 70 L 44 116 L 58 70" fill="#E8DEC0" opacity="0.7"/>
+      <path d="M30 70 L 44 116 L 58 70" fill="none" stroke="#C8BFA5" stroke-width="1.5"/>
+
+      <!-- GI forward sleeve (right arm reaching across to grip opponent's collar) -->
+      <path d="M64 78 Q 105 82 158 96 L 154 116 Q 100 102 60 92 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- right hand gripping opponent's lapel (will overlap onto opponent) -->
+      <ellipse cx="160" cy="108" rx="11" ry="9" fill="#E8B89A"/>
+
+      <!-- belt (PURPLE) -->
+      <rect x="14" y="162" width="60" height="14" fill="#6B3F8A"/>
+      <rect x="14" y="162" width="60" height="2" fill="#3F1F5C"/>
+      <rect x="14" y="174" width="60" height="2" fill="#3F1F5C"/>
+      <rect x="38" y="159" width="12" height="20" fill="#6B3F8A"/>
+      <rect x="38" y="159" width="12" height="20" fill="none" stroke="#3F1F5C" stroke-width="1"/>
+
+      <!-- GI pants -->
+      <path d="M22 186 L 14 274 L 32 276 L 40 204 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <path d="M48 204 L 56 276 L 74 274 L 66 186 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- feet -->
+      <ellipse cx="24" cy="278" rx="12" ry="4" fill="#E8B89A"/>
+      <ellipse cx="65" cy="278" rx="12" ry="4" fill="#E8B89A"/>
     </g>
-    <text x="212" y="385" text-anchor="middle" fill="#3F0F1C" font-size="32" font-weight="800" letter-spacing="6">JUJITSU</text>
+
+    <!-- RIGHT FIGHTER (blue belt, facing left, defending with sleeve grip) -->
+    <g transform="translate(245 60)">
+      <!-- Hair ponytail back -->
+      <path d="M82 18 Q 96 32 94 70 Q 92 95 82 110 L 68 105 Q 72 80 69 60 Q 66 38 62 22 Z" fill="#3A1F0E"/>
+      <!-- Head -->
+      <ellipse cx="60" cy="34" rx="22" ry="24" fill="#EAB89A"/>
+      <!-- Hair top -->
+      <path d="M38 22 Q 60 6 82 22 Q 82 32 76 40 Q 72 22 60 20 Q 46 22 42 36 Q 38 30 38 22 Z" fill="#3A1F0E"/>
+      <!-- Eye -->
+      <ellipse cx="50" cy="34" rx="2.2" ry="2.8" fill="#1A0A12"/>
+      <!-- Brow -->
+      <path d="M44 28 L 54 28" stroke="#3A1F0E" stroke-width="2" stroke-linecap="round"/>
+      <!-- Mouth -->
+      <path d="M44 46 L 54 45" stroke="#5C1A2B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <!-- Neck -->
+      <rect x="52" y="54" width="16" height="14" fill="#EAB89A"/>
+
+      <!-- GI back sleeve (right arm posting back / counter-grip) -->
+      <path d="M88 78 Q 104 95 114 130 L 98 138 Q 86 110 76 88 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- back hand -->
+      <ellipse cx="108" cy="135" rx="10" ry="8" fill="#EAB89A"/>
+
+      <!-- GI torso -->
+      <path d="M38 70 Q 60 64 82 70 L 90 178 Q 88 184 82 186 L 38 186 Q 32 184 30 178 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.5"/>
+      <!-- lapel V -->
+      <path d="M46 70 L 60 116 L 74 70" fill="#E8DEC0" opacity="0.7"/>
+      <path d="M46 70 L 60 116 L 74 70" fill="none" stroke="#C8BFA5" stroke-width="1.5"/>
+
+      <!-- GI forward sleeve (left arm reaching across to grip opponent's sleeve) -->
+      <path d="M38 88 Q -5 98 -55 116 L -50 134 Q 0 120 42 108 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- forward hand gripping opponent's sleeve area -->
+      <ellipse cx="-58" cy="125" rx="11" ry="9" fill="#EAB89A"/>
+
+      <!-- belt (BLUE) -->
+      <rect x="30" y="162" width="60" height="14" fill="#1F3F6B"/>
+      <rect x="30" y="162" width="60" height="2" fill="#0F244A"/>
+      <rect x="30" y="174" width="60" height="2" fill="#0F244A"/>
+      <rect x="54" y="159" width="12" height="20" fill="#1F3F6B"/>
+      <rect x="54" y="159" width="12" height="20" fill="none" stroke="#0F244A" stroke-width="1"/>
+
+      <!-- pants -->
+      <path d="M38 186 L 30 274 L 48 276 L 56 204 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <path d="M64 204 L 72 276 L 90 274 L 82 186 Z" fill="#FBF3E0" stroke="#C8BFA5" stroke-width="1.2"/>
+      <!-- feet -->
+      <ellipse cx="40" cy="278" rx="12" ry="4" fill="#EAB89A"/>
+      <ellipse cx="81" cy="278" rx="12" ry="4" fill="#EAB89A"/>
+    </g>
+
+    <text x="212" y="395" text-anchor="middle" fill="#3F0F1C" font-size="32" font-weight="800" letter-spacing="6">JUJITSU</text>
   </g>
 
-  <!-- RIGHT PANEL: HANDGUN SAFETY -->
+  <!-- RIGHT PANEL: HANDGUN SAFETY - polished illustration -->
   <g transform="translate(565 670)">
     <rect width="425" height="425" rx="20" ry="20" fill="#F5EBD8"/>
-    <g transform="translate(60 55)" fill="#1A0A12">
-      <!-- Ponytail behind head -->
-      <path d="M118 60 Q 104 80 108 110 L 122 110 Q 124 85 132 65 Z"/>
-      <!-- Head -->
-      <circle cx="142" cy="65" r="20"/>
-      <!-- Safety glasses -->
-      <rect x="128" y="58" width="28" height="5" rx="2" fill="#F5EBD8" opacity="0.95"/>
-      <!-- Neck -->
-      <rect x="135" y="82" width="14" height="10" rx="2"/>
-      <!-- Torso (slight athletic forward lean) -->
-      <path d="M110 95 Q 142 86 178 95 L 185 185 Q 168 198 140 198 Q 112 198 105 185 Z"/>
-      <!-- Back leg (planted) -->
-      <path d="M112 192 Q 102 240 95 285 L 118 295 L 130 295 Q 130 245 130 200 Z"/>
-      <!-- Front leg (forward, weight on it) -->
-      <path d="M152 192 Q 162 245 175 290 L 158 298 L 138 295 Q 140 250 142 200 Z"/>
 
-      <!-- BOTH arms extended forward in isosceles stance -->
-      <!-- back arm -->
-      <path d="M160 108 Q 195 116 232 128 L 235 142 Q 198 132 158 124 Z" opacity="0.88"/>
-      <!-- front arm -->
-      <path d="M155 118 Q 195 128 234 138 L 237 152 Q 198 142 152 134 Z"/>
-      <!-- hands wrapped around pistol grip -->
-      <path d="M228 128 L 250 128 L 252 156 L 226 156 Z"/>
-
-      <!-- PISTOL - compact semi-auto, short barrel, NO STOCK -->
-      <!-- slide top -->
-      <rect x="244" y="128" width="42" height="13" rx="1.5"/>
-      <!-- front sight -->
-      <rect x="280" y="123" width="4" height="6"/>
-      <!-- rear sight -->
-      <rect x="247" y="123" width="4" height="6"/>
-      <!-- grip (extends down into hands) -->
-      <path d="M244 141 L 256 141 L 260 165 L 240 165 Z"/>
-      <!-- trigger guard cutout -->
-      <path d="M249 143 L 268 143 L 268 154 L 261 154 L 258 150 L 249 150 Z" fill="#F5EBD8"/>
-      <!-- trigger -->
-      <rect x="261" y="145" width="2.5" height="7"/>
-      <!-- muzzle hint -->
-      <rect x="284" y="132" width="3" height="5"/>
+    <!-- subtle range floor + faint target silhouette -->
+    <rect x="0" y="290" width="425" height="70" fill="#D9CDB2" opacity="0.5"/>
+    <!-- distant target rings (top-right corner, very faded) -->
+    <g opacity="0.18" transform="translate(330 75)">
+      <circle cx="0" cy="0" r="36" fill="none" stroke="#3F0F1C" stroke-width="2"/>
+      <circle cx="0" cy="0" r="26" fill="none" stroke="#3F0F1C" stroke-width="2"/>
+      <circle cx="0" cy="0" r="16" fill="none" stroke="#3F0F1C" stroke-width="2"/>
+      <circle cx="0" cy="0" r="6" fill="#5C1A2B"/>
     </g>
-    <text x="212" y="385" text-anchor="middle" fill="#3F0F1C" font-size="28" font-weight="800" letter-spacing="5">HANDGUN SAFETY</text>
+
+    <g transform="translate(40 50)">
+      <!-- LEGS (athletic stance) -->
+      <!-- back leg (planted) -->
+      <path d="M90 195 Q 80 235 75 295 L 100 305 L 115 305 Q 113 245 115 198 Z" fill="#1A0A12"/>
+      <!-- front leg (slightly forward) -->
+      <path d="M138 195 Q 148 240 155 300 L 178 308 L 195 304 Q 183 245 175 198 Z" fill="#1A0A12"/>
+      <!-- shoe outlines -->
+      <ellipse cx="107" cy="306" rx="22" ry="6" fill="#0A0509"/>
+      <ellipse cx="186" cy="306" rx="22" ry="6" fill="#0A0509"/>
+
+      <!-- TORSO (athletic top, burgundy) -->
+      <path d="M82 100 Q 132 88 188 100 L 198 200 Q 175 215 135 215 Q 95 215 78 200 Z" fill="#5C1A2B"/>
+      <!-- subtle highlight -->
+      <path d="M132 92 Q 135 150 138 210" stroke="#7B2A40" stroke-width="2" fill="none" opacity="0.5"/>
+
+      <!-- HEAD + HAIR -->
+      <!-- back hair / ponytail -->
+      <path d="M108 50 Q 90 75 92 115 Q 95 130 105 132 L 116 128 Q 114 100 118 75 Z" fill="#2C1810"/>
+      <!-- head (slight 3/4) -->
+      <ellipse cx="132" cy="62" rx="24" ry="27" fill="#E8B89A"/>
+      <!-- hair top -->
+      <path d="M110 48 Q 132 30 156 48 Q 158 60 152 70 Q 148 50 132 48 Q 118 50 114 64 Q 110 58 110 48 Z" fill="#2C1810"/>
+      <!-- eye glasses hint behind lens -->
+      <ellipse cx="142" cy="60" rx="3" ry="2.5" fill="#1A0A12"/>
+      <!-- mouth focused -->
+      <path d="M140 76 L 150 75" stroke="#5C1A2B" stroke-width="1.5" stroke-linecap="round"/>
+
+      <!-- EAR PROTECTION (over-ear muffs) -->
+      <!-- headband -->
+      <path d="M114 38 Q 132 22 150 38" fill="none" stroke="#1A0A12" stroke-width="4" stroke-linecap="round"/>
+      <!-- ear cup (visible on near side) -->
+      <ellipse cx="116" cy="60" rx="11" ry="14" fill="#1A0A12"/>
+      <ellipse cx="116" cy="60" rx="8" ry="11" fill="#3F0F1C"/>
+
+      <!-- SAFETY GLASSES (gold-tinted) -->
+      <rect x="124" y="54" width="34" height="12" rx="3" fill="#C9A961" opacity="0.65"/>
+      <rect x="124" y="54" width="34" height="12" rx="3" fill="none" stroke="#1A0A12" stroke-width="1.5"/>
+      <line x1="124" y1="58" x2="120" y2="58" stroke="#1A0A12" stroke-width="1.5"/>
+
+      <!-- NECK -->
+      <rect x="124" y="86" width="16" height="14" fill="#E8B89A"/>
+
+      <!-- ARMS extended forward in isosceles stance -->
+      <!-- back arm (shoulder to elbow to wrist) -->
+      <path d="M165 108 Q 210 118 258 132 L 263 148 Q 215 138 162 126 Z" fill="#5C1A2B" opacity="0.92"/>
+      <!-- back forearm continuation, slightly bent -->
+      <path d="M256 130 Q 280 138 300 148 L 302 162 Q 282 152 254 144 Z" fill="#E8B89A"/>
+      <!-- front arm -->
+      <path d="M155 118 Q 205 126 256 138 L 260 154 Q 210 144 152 134 Z" fill="#5C1A2B"/>
+      <!-- front forearm -->
+      <path d="M254 138 Q 282 148 304 158 L 304 172 Q 282 162 252 152 Z" fill="#E8B89A"/>
+
+      <!-- HANDS gripping pistol -->
+      <ellipse cx="304" cy="161" rx="14" ry="11" fill="#E8B89A"/>
+      <ellipse cx="304" cy="170" rx="13" ry="9" fill="#D9A88A"/>
+
+      <!-- PISTOL - compact semi-auto, gunmetal -->
+      <!-- slide -->
+      <rect x="316" y="148" width="56" height="16" rx="2" fill="#2A2A2A"/>
+      <rect x="316" y="148" width="56" height="3" fill="#3F3F3F"/>
+      <rect x="316" y="161" width="56" height="3" fill="#1A1A1A"/>
+      <!-- slide serrations -->
+      <line x1="320" y1="151" x2="320" y2="162" stroke="#1A1A1A" stroke-width="1"/>
+      <line x1="324" y1="151" x2="324" y2="162" stroke="#1A1A1A" stroke-width="1"/>
+      <line x1="328" y1="151" x2="328" y2="162" stroke="#1A1A1A" stroke-width="1"/>
+      <!-- front sight -->
+      <rect x="368" y="143" width="4" height="6" fill="#2A2A2A"/>
+      <!-- rear sight -->
+      <rect x="318" y="143" width="4" height="6" fill="#2A2A2A"/>
+      <!-- muzzle -->
+      <rect x="370" y="152" width="4" height="8" fill="#1A1A1A"/>
+      <!-- frame/grip going into hands -->
+      <path d="M316 164 L 328 164 L 332 192 L 308 192 Z" fill="#2A2A2A"/>
+      <!-- trigger guard -->
+      <path d="M322 166 L 344 166 L 344 178 L 336 178 L 333 174 L 322 174 Z" fill="#F5EBD8"/>
+      <!-- trigger -->
+      <rect x="338" y="167" width="3" height="9" fill="#2A2A2A"/>
+      <!-- magazine baseplate hint -->
+      <rect x="308" y="190" width="24" height="4" fill="#1A1A1A"/>
+    </g>
+
+    <text x="212" y="395" text-anchor="middle" fill="#3F0F1C" font-size="28" font-weight="800" letter-spacing="5">HANDGUN SAFETY</text>
   </g>
 
   <!-- PILLS -->
