@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Women's Self-Defense &amp; Firearm Safety</title>
+<style>
+  :root {
+    --burgundy: #5C1A2B;
+    --burgundy-dark: #3F0F1C;
+    --cream: #F5EBD8;
+    --cream-soft: #EFE3CC;
+    --gold: #C9A961;
+    --pink: #E8C5C5;
+    --ink: #3F0F1C;
+  }
+  html, body { margin: 0; padding: 0; background: #222; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .stage { display: flex; justify-content: center; padding: 24px; }
+  .poster {
+    width: 1080px;
+    height: 1920px;
+    background:
+      radial-gradient(ellipse at top, #6B2034 0%, var(--burgundy) 45%, var(--burgundy-dark) 100%);
+    position: relative;
+    color: var(--cream);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  /* subtle diamond pattern */
+  .poster::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,0.025) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255,255,255,0.025) 25%, transparent 25%);
+    background-size: 38px 38px;
+    pointer-events: none;
+  }
+  .frame {
+    position: absolute;
+    inset: 36px;
+    border: 1px solid rgba(201,169,97,0.35);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .corner {
+    position: absolute;
+    width: 150px; height: 150px;
+    pointer-events: none;
+  }
+  .corner.tl { top: 24px; left: 24px; }
+  .corner.tr { top: 24px; right: 24px; transform: scaleX(-1); }
+  .corner.bl { bottom: 24px; left: 24px; transform: scaleY(-1); }
+  .corner.br { bottom: 24px; right: 24px; transform: scale(-1,-1); }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    padding: 110px 90px 80px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eyebrow {
+    text-align: center;
+    letter-spacing: 0.5em;
+    font-size: 22px;
+    color: var(--cream);
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+  .headline {
+    text-align: center;
+    font-size: 100px;
+    line-height: 0.95;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--cream);
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .headline .amp { color: var(--gold); font-style: italic; font-weight: 700; }
+  .divider {
+    width: 90px; height: 2px; background: var(--gold);
+    margin: 32px auto 28px;
+  }
+  .subhead {
+    text-align: center;
+    font-size: 30px;
+    line-height: 1.3;
+    color: var(--cream);
+    font-weight: 500;
+    margin-bottom: 56px;
+  }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 8px;
+  }
+  .panel {
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 36px 16px 24px;
+    text-align: center;
+    color: var(--ink);
+  }
+  .panel svg { display: block; margin: 0 auto; }
+  .panel .label {
+    margin-top: 18px;
+    font-size: 30px;
+    letter-spacing: 0.18em;
+    font-weight: 800;
+    color: var(--burgundy-dark);
+  }
+
+  .pills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin: 22px 0 40px;
+  }
+  .pill {
+    background: var(--pink);
+    color: var(--burgundy-dark);
+    border-radius: 999px;
+    padding: 14px 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    width: 280px;
+    justify-self: center;
+  }
+
+  .location {
+    display: flex; align-items: center; justify-content: center;
+    gap: 18px;
+    margin-bottom: 36px;
+    font-size: 30px;
+    letter-spacing: 0.25em;
+    font-weight: 700;
+  }
+  .location .diamond {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 28px 14px 24px;
+    text-align: center;
+    color: var(--ink);
+    position: relative;
+  }
+  .card .phone-icon {
+    position: absolute;
+    top: -22px; left: 50%; transform: translateX(-50%);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card .role {
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    color: var(--burgundy);
+    margin-top: 8px;
+  }
+  .card .name {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 4px 0 2px;
+  }
+  .card .cred {
+    font-size: 18px;
+    color: var(--burgundy);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .card .num {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .contact-row {
+    text-align: center;
+    letter-spacing: 0.5em;
+    font-size: 20px;
+    color: var(--cream);
+    margin-top: 8px;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  .bottom {
+    margin-top: auto;
+    border-top: 1px solid rgba(201,169,97,0.6);
+    border-bottom: 1px solid rgba(201,169,97,0.6);
+    padding: 26px 0 28px;
+    text-align: center;
+  }
+  .tagline {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--cream);
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="poster">
+
+    <div class="frame"></div>
+
+    <!-- Corner ornaments: pearl drop + leaves -->
+    <svg class="corner tl" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#C9A961" stroke-width="1.6" stroke-linecap="round">
+        <path d="M10 10 Q 60 12 75 60"/>
+        <path d="M10 10 Q 12 60 60 75"/>
+        <path d="M30 30 Q 55 35 70 70" opacity="0.5"/>
+      </g>
+      <g fill="#E8C5C5" stroke="#C9A961" stroke-width="1">
+        <circle cx="78" cy="62" r="5"/>
+        <circle cx="62" cy="78" r="5"/>
+        <circle cx="86" cy="78" r="4"/>
+      </g>
+      <g fill="#C9A961">
+        <ellipse cx="55" cy="40" rx="8" ry="3" transform="rotate(-25 55 40)"/>
+        <ellipse cx="40" cy="55" rx="8" ry="3" transform="rotate(-65 40 55)"/>
+      </g>
+    </svg>
+    <svg class="corner tr" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#C9A961" stroke-width="1.6" stroke-linecap="round">
+        <path d="M10 10 Q 60 12 75 60"/>
+        <path d="M10 10 Q 12 60 60 75"/>
+        <path d="M30 30 Q 55 35 70 70" opacity="0.5"/>
+      </g>
+      <g fill="#E8C5C5" stroke="#C9A961" stroke-width="1">
+        <circle cx="78" cy="62" r="5"/>
+        <circle cx="62" cy="78" r="5"/>
+        <circle cx="86" cy="78" r="4"/>
+      </g>
+      <g fill="#C9A961">
+        <ellipse cx="55" cy="40" rx="8" ry="3" transform="rotate(-25 55 40)"/>
+        <ellipse cx="40" cy="55" rx="8" ry="3" transform="rotate(-65 40 55)"/>
+      </g>
+    </svg>
+    <svg class="corner bl" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#C9A961" stroke-width="1.6" stroke-linecap="round">
+        <path d="M10 10 Q 60 12 75 60"/>
+        <path d="M10 10 Q 12 60 60 75"/>
+        <path d="M30 30 Q 55 35 70 70" opacity="0.5"/>
+      </g>
+      <g fill="#E8C5C5" stroke="#C9A961" stroke-width="1">
+        <circle cx="78" cy="62" r="5"/>
+        <circle cx="62" cy="78" r="5"/>
+        <circle cx="86" cy="78" r="4"/>
+      </g>
+      <g fill="#C9A961">
+        <ellipse cx="55" cy="40" rx="8" ry="3" transform="rotate(-25 55 40)"/>
+        <ellipse cx="40" cy="55" rx="8" ry="3" transform="rotate(-65 40 55)"/>
+      </g>
+    </svg>
+    <svg class="corner br" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="#C9A961" stroke-width="1.6" stroke-linecap="round">
+        <path d="M10 10 Q 60 12 75 60"/>
+        <path d="M10 10 Q 12 60 60 75"/>
+        <path d="M30 30 Q 55 35 70 70" opacity="0.5"/>
+      </g>
+      <g fill="#E8C5C5" stroke="#C9A961" stroke-width="1">
+        <circle cx="78" cy="62" r="5"/>
+        <circle cx="62" cy="78" r="5"/>
+        <circle cx="86" cy="78" r="4"/>
+      </g>
+      <g fill="#C9A961">
+        <ellipse cx="55" cy="40" rx="8" ry="3" transform="rotate(-25 55 40)"/>
+        <ellipse cx="40" cy="55" rx="8" ry="3" transform="rotate(-65 40 55)"/>
+      </g>
+    </svg>
+
+    <div class="content">
+      <div class="eyebrow">FOR WOMEN &nbsp;•&nbsp; BY WOMEN</div>
+      <h1 class="headline">
+        Women's<br/>
+        Self-Defense<br/>
+        <span class="amp">&amp;</span> Firearm Safety
+      </h1>
+      <div class="divider"></div>
+      <div class="subhead">Jujitsu and Handgun Safety Classes<br/>for Women</div>
+
+      <div class="panels">
+        <!-- JUJITSU panel: two figures, one throwing the other -->
+        <div class="panel">
+          <svg width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#1A0A12">
+              <!-- thrower (lower, planted) -->
+              <circle cx="95" cy="120" r="18"/>
+              <!-- thrower torso curved forward -->
+              <path d="M70 145 Q 95 130 120 145 L 125 200 Q 110 215 90 215 L 70 215 Q 65 180 70 145 Z"/>
+              <!-- thrower planted leg -->
+              <path d="M82 210 Q 78 245 70 268 L 90 268 Q 96 240 100 215 Z"/>
+              <!-- thrower back leg kicking out -->
+              <path d="M105 210 Q 140 235 175 250 L 168 268 Q 130 258 95 240 Z"/>
+              <!-- thrower arm gripping -->
+              <path d="M115 150 Q 145 130 170 110 L 160 100 Q 130 115 105 140 Z"/>
+
+              <!-- thrown opponent (upper, flipping) -->
+              <circle cx="200" cy="60" r="16"/>
+              <!-- opponent torso arcing over -->
+              <path d="M180 75 Q 205 70 225 85 L 230 130 Q 210 138 188 128 Z"/>
+              <!-- opponent arms up/back -->
+              <path d="M178 85 Q 150 95 130 110 L 140 122 Q 165 110 188 100 Z"/>
+              <!-- opponent legs kicked up -->
+              <path d="M215 95 Q 245 75 265 50 L 258 38 Q 232 60 210 85 Z"/>
+              <path d="M222 110 Q 255 105 272 90 L 268 78 Q 245 88 218 100 Z"/>
+
+              <!-- motion swoosh -->
+              <path d="M50 200 Q 130 70 240 30" fill="none" stroke="#1A0A12" stroke-width="2.5" opacity="0.35" stroke-linecap="round" stroke-dasharray="4 8"/>
+            </g>
+          </svg>
+          <div class="label">JUJITSU</div>
+        </div>
+
+        <!-- HANDGUN SAFETY panel: female shooter, isosceles stance, PISTOL -->
+        <div class="panel">
+          <svg width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#1A0A12">
+              <!-- ponytail -->
+              <path d="M118 60 Q 108 75 110 95 L 118 95 Q 120 78 126 65 Z"/>
+              <!-- head -->
+              <circle cx="135" cy="62" r="17"/>
+              <!-- neck -->
+              <rect x="129" y="76" width="14" height="9" rx="2"/>
+              <!-- torso, slight forward lean, athletic -->
+              <path d="M108 88 Q 135 80 168 88 L 175 165 Q 160 175 135 175 Q 110 175 102 165 Z"/>
+              <!-- back foot/leg (planted, slightly back) -->
+              <path d="M108 170 Q 100 210 95 240 L 110 268 L 125 268 Q 125 230 125 175 Z"/>
+              <!-- front foot/leg (forward, weight on it) -->
+              <path d="M145 170 Q 155 215 165 248 L 150 268 L 132 268 Q 135 220 138 175 Z"/>
+
+              <!-- BOTH arms extended forward in isosceles stance, gripping a HANDGUN -->
+              <!-- back arm (further) -->
+              <path d="M150 100 Q 180 108 210 118 L 213 130 Q 185 122 152 115 Z" opacity="0.85"/>
+              <!-- front arm (nearer) -->
+              <path d="M148 108 Q 180 116 212 126 L 215 138 Q 185 130 150 122 Z"/>
+              <!-- hands gripping pistol -->
+              <rect x="208" y="116" width="18" height="22" rx="3"/>
+
+              <!-- PISTOL (compact semi-auto, NO shoulder stock, NO long barrel) -->
+              <!-- slide -->
+              <rect x="222" y="118" width="32" height="11" rx="1"/>
+              <!-- front sight notch -->
+              <rect x="250" y="115" width="3" height="4"/>
+              <!-- rear sight notch -->
+              <rect x="225" y="115" width="3" height="4"/>
+              <!-- grip going down into hands -->
+              <path d="M222 129 L 230 129 L 232 148 L 218 148 Z"/>
+              <!-- trigger guard -->
+              <path d="M226 131 L 240 131 L 240 140 L 234 140 L 232 137 L 226 137 Z" fill="#F5EBD8"/>
+              <!-- trigger -->
+              <rect x="234" y="132" width="2" height="6"/>
+
+              <!-- safety glasses hint -->
+              <rect x="125" y="55" width="22" height="4" rx="1.5" fill="#F5EBD8" opacity="0.9"/>
+            </g>
+          </svg>
+          <div class="label">HANDGUN SAFETY</div>
+        </div>
+      </div>
+
+      <div class="pills">
+        <div class="pill">PRIVATE LESSONS</div>
+        <div class="pill">GROUP CLASSES</div>
+      </div>
+
+      <div class="location">
+        <span class="diamond"></span>
+        LAKEWOOD, NJ
+        <span class="diamond"></span>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="phone-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#5C1A2B"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C9.5 21 3 14.5 3 6c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
+          </div>
+          <div class="role">JUJITSU INSTRUCTOR</div>
+          <div class="name">Chana Garnick</div>
+          <div class="cred">Purple Belt</div>
+          <div class="num">(732) 239-3112</div>
+        </div>
+        <div class="card">
+          <div class="phone-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#5C1A2B"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C9.5 21 3 14.5 3 6c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>
+          </div>
+          <div class="role">FIREARMS INSTRUCTOR</div>
+          <div class="name">Yael Quittner</div>
+          <div class="cred">USCCA Certified</div>
+          <div class="num">(347) 232-9000</div>
+        </div>
+      </div>
+
+      <div class="contact-row">CALL &nbsp;•&nbsp; TEXT &nbsp;•&nbsp; WHATSAPP</div>
+
+      <div class="bottom">
+        <div class="tagline">Empowering Women<br/>to Protect Themselves</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
