@@ -220,10 +220,9 @@
 
   <!-- TAGLINE -->
   <g transform="translate(540,1790)">
-    <line x1="-400" y1="-42" x2="400" y2="-42" stroke="#C9A77A" stroke-width="2.5"/>
-    <line x1="-400" y1="42" x2="400" y2="42" stroke="#C9A77A" stroke-width="2.5"/>
-    <text x="0" y="15" text-anchor="middle" class="display" font-size="38" fill="#F6EFE3">
-      Empowering Women <tspan fill="#C9A77A">to</tspan> Protect Themselves
-    </text>
+    <line x1="-440" y1="-78" x2="440" y2="-78" stroke="#C9A77A" stroke-width="3"/>
+    <line x1="-440" y1="78" x2="440" y2="78" stroke="#C9A77A" stroke-width="3"/>
+    <text x="0" y="-12" text-anchor="middle" class="display" font-size="50" fill="#F6EFE3">EMPOWERING WOMEN</text>
+    <text x="0" y="48" text-anchor="middle" class="display" font-size="44" fill="#F6EFE3">TO PROTECT THEMSELVES</text>
   </g>
 </svg>
