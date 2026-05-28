@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <style>
+    .label { font-family: "DejaVu Sans"; font-weight: 700; }
+    .small { font-family: "DejaVu Sans"; font-weight: 400; }
+  </style>
+  <rect width="1400" height="900" fill="#f5f5f5"/>
+  <text x="700" y="50" text-anchor="middle" class="label" font-size="32" fill="#222">Color palette options</text>
+
+  <!-- A: Navy + Rose Gold + Cream -->
+  <g transform="translate(40,100)">
+    <rect width="300" height="320" fill="#1B2A4E"/>
+    <rect y="320" width="300" height="60" fill="#C9A77A"/>
+    <rect y="380" width="300" height="40" fill="#F6EFE3"/>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">WOMEN'S</text>
+    <text x="150" y="160" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">SELF-DEFENSE</text>
+    <line x1="100" y1="180" x2="200" y2="180" stroke="#C9A77A" stroke-width="3"/>
+    <text x="150" y="220" text-anchor="middle" class="small" font-size="18" fill="#C9A77A">jujitsu &amp; firearm safety</text>
+    <text x="150" y="460" text-anchor="middle" class="label" font-size="22" fill="#1B2A4E">A · Navy + Champagne</text>
+  </g>
+
+  <!-- B: Wine + Blush + Cream -->
+  <g transform="translate(380,100)">
+    <rect width="300" height="320" fill="#5A1A2B"/>
+    <rect y="320" width="300" height="60" fill="#E8B7B0"/>
+    <rect y="380" width="300" height="40" fill="#F6EFE3"/>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">WOMEN'S</text>
+    <text x="150" y="160" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">SELF-DEFENSE</text>
+    <line x1="100" y1="180" x2="200" y2="180" stroke="#E8B7B0" stroke-width="3"/>
+    <text x="150" y="220" text-anchor="middle" class="small" font-size="18" fill="#E8B7B0">jujitsu &amp; firearm safety</text>
+    <text x="150" y="460" text-anchor="middle" class="label" font-size="22" fill="#5A1A2B">B · Burgundy + Blush</text>
+  </g>
+
+  <!-- C: Charcoal + Coral + Cream -->
+  <g transform="translate(720,100)">
+    <rect width="300" height="320" fill="#1F2024"/>
+    <rect y="320" width="300" height="60" fill="#E07856"/>
+    <rect y="380" width="300" height="40" fill="#F6EFE3"/>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">WOMEN'S</text>
+    <text x="150" y="160" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">SELF-DEFENSE</text>
+    <line x1="100" y1="180" x2="200" y2="180" stroke="#E07856" stroke-width="3"/>
+    <text x="150" y="220" text-anchor="middle" class="small" font-size="18" fill="#E07856">jujitsu &amp; firearm safety</text>
+    <text x="150" y="460" text-anchor="middle" class="label" font-size="22" fill="#1F2024">C · Charcoal + Coral</text>
+  </g>
+
+  <!-- D: Forest + Gold + Cream -->
+  <g transform="translate(1060,100)">
+    <rect width="300" height="320" fill="#1F3A2E"/>
+    <rect y="320" width="300" height="60" fill="#C8A24B"/>
+    <rect y="380" width="300" height="40" fill="#F6EFE3"/>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">WOMEN'S</text>
+    <text x="150" y="160" text-anchor="middle" class="label" font-size="26" fill="#F6EFE3">SELF-DEFENSE</text>
+    <line x1="100" y1="180" x2="200" y2="180" stroke="#C8A24B" stroke-width="3"/>
+    <text x="150" y="220" text-anchor="middle" class="small" font-size="18" fill="#C8A24B">jujitsu &amp; firearm safety</text>
+    <text x="150" y="460" text-anchor="middle" class="label" font-size="22" fill="#1F3A2E">D · Forest + Gold</text>
+  </g>
+
+  <!-- Bottom row: refined purples & current -->
+  <text x="700" y="540" text-anchor="middle" class="label" font-size="22" fill="#555">If you want to stay in the purple family:</text>
+
+  <g transform="translate(220,580)">
+    <rect width="300" height="220" fill="#3D2350"/>
+    <rect y="220" width="300" height="40" fill="#C9A77A"/>
+    <rect y="260" width="300" height="30" fill="#EDE3FA"/>
+    <text x="150" y="90" text-anchor="middle" class="label" font-size="22" fill="#EDE3FA">WOMEN'S</text>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="22" fill="#EDE3FA">SELF-DEFENSE</text>
+    <line x1="110" y1="138" x2="190" y2="138" stroke="#C9A77A" stroke-width="2"/>
+    <text x="150" y="330" text-anchor="middle" class="label" font-size="20" fill="#3D2350">E · Eggplant + Champagne</text>
+  </g>
+
+  <g transform="translate(560,580)">
+    <rect width="300" height="220" fill="#2E0A4F"/>
+    <rect y="220" width="300" height="40" fill="#D9C7F0"/>
+    <rect y="260" width="300" height="30" fill="#FFFFFF"/>
+    <text x="150" y="90" text-anchor="middle" class="label" font-size="22" fill="#FFFFFF">WOMEN'S</text>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="22" fill="#FFFFFF">SELF-DEFENSE</text>
+    <line x1="110" y1="138" x2="190" y2="138" stroke="#D9C7F0" stroke-width="2"/>
+    <text x="150" y="330" text-anchor="middle" class="label" font-size="20" fill="#2E0A4F">F · Current (deep purple + lavender)</text>
+  </g>
+
+  <g transform="translate(900,580)">
+    <rect width="300" height="220" fill="#0F1B2D"/>
+    <rect y="220" width="300" height="40" fill="#B08D57"/>
+    <rect y="260" width="300" height="30" fill="#F6EFE3"/>
+    <text x="150" y="90" text-anchor="middle" class="label" font-size="22" fill="#F6EFE3">WOMEN'S</text>
+    <text x="150" y="120" text-anchor="middle" class="label" font-size="22" fill="#F6EFE3">SELF-DEFENSE</text>
+    <line x1="110" y1="138" x2="190" y2="138" stroke="#B08D57" stroke-width="2"/>
+    <text x="150" y="330" text-anchor="middle" class="label" font-size="20" fill="#0F1B2D">G · Midnight + Brass</text>
+  </g>
+</svg>
