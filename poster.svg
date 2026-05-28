@@ -114,9 +114,9 @@
     <!-- left card -->
     <rect x="0" y="22" width="425" height="220" rx="16" ry="16" fill="#F5EBD8"/>
     <circle cx="212" cy="22" r="26" fill="#E8C5C5"/>
-    <g transform="translate(199 9)" fill="#5C1A2B">
-      <path d="M5.5 8.5 C 7 12 10.5 15.5 14 17 L 16 15 C 16.3 14.7 16.7 14.6 17 14.7 C 18 15 19 15.2 20.2 15.2 C 20.7 15.2 21 15.5 21 16 V 18.5 C 21 19 20.7 19.3 20.2 19.3 C 13 19.3 4.7 11 4.7 3.8 C 4.7 3.3 5 3 5.5 3 H 8 C 8.5 3 8.8 3.3 8.8 3.8 C 8.8 4.9 9 6 9.3 7 C 9.4 7.4 9.3 7.7 9 8 Z" transform="scale(1.1)"/>
-    </g>
+    <g transform="translate(190 0) scale(1.83)" fill="#5C1A2B">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </g>
     <text x="212" y="92" text-anchor="middle" fill="#5C1A2B" font-size="20" font-weight="700" letter-spacing="4">JUJITSU INSTRUCTOR</text>
     <text x="212" y="135" text-anchor="middle" fill="#1A0A12" font-size="36" font-weight="800">Chana Garnick</text>
     <text x="212" y="165" text-anchor="middle" fill="#5C1A2B" font-size="20" font-style="italic">Purple Belt</text>
@@ -126,8 +126,8 @@
     <g transform="translate(475 0)">
       <rect x="0" y="22" width="425" height="220" rx="16" ry="16" fill="#F5EBD8"/>
       <circle cx="212" cy="22" r="26" fill="#E8C5C5"/>
-      <g transform="translate(199 9)" fill="#5C1A2B">
-        <path d="M5.5 8.5 C 7 12 10.5 15.5 14 17 L 16 15 C 16.3 14.7 16.7 14.6 17 14.7 C 18 15 19 15.2 20.2 15.2 C 20.7 15.2 21 15.5 21 16 V 18.5 C 21 19 20.7 19.3 20.2 19.3 C 13 19.3 4.7 11 4.7 3.8 C 4.7 3.3 5 3 5.5 3 H 8 C 8.5 3 8.8 3.3 8.8 3.8 C 8.8 4.9 9 6 9.3 7 C 9.4 7.4 9.3 7.7 9 8 Z" transform="scale(1.1)"/>
+      <g transform="translate(190 0) scale(1.83)" fill="#5C1A2B">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
       </g>
       <text x="212" y="92" text-anchor="middle" fill="#5C1A2B" font-size="20" font-weight="700" letter-spacing="4">FIREARMS INSTRUCTOR</text>
       <text x="212" y="135" text-anchor="middle" fill="#1A0A12" font-size="36" font-weight="800">Yael Quittner</text>
