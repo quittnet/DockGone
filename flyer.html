@@ -112,90 +112,74 @@
     <circle cx="786" cy="830" r="160"/>
   </g>
 
-  <!-- ===== LEFT FIGURE: side-profile fighter, high front kick + extended strike ===== -->
-  <g transform="translate(294 850)" fill="#2C0D15" stroke="#2C0D15" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Ponytail streaming back/left -->
-    <path d="M-32 -132 Q -78 -118 -98 -92" fill="none" stroke-width="18"/>
-    <path d="M-30 -122 Q -64 -106 -82 -82" fill="none" stroke-width="11" opacity="0.85"/>
+  <!-- ===== LEFT FIGURE: two grappling women in collar tie, bold pictogram ===== -->
+  <g transform="translate(294 855) scale(0.82)" fill="#2C0D15">
+    <g id="grappler">
+      <!-- Ponytail flicks on top of head -->
+      <path d="M-58 -158 Q -72 -168 -66 -178 Q -52 -174 -48 -160 Z"/>
+      <path d="M-36 -162 Q -22 -172 -22 -160 Q -26 -154 -38 -154 Z"/>
 
-    <!-- Head -->
-    <circle cx="-12" cy="-128" r="26"/>
+      <!-- Head -->
+      <circle cx="-40" cy="-128" r="38"/>
 
-    <!-- Torso (vertical thick stroke, neck to hip) -->
-    <line x1="-12" y1="-100" x2="-12" y2="22" stroke-width="44"/>
+      <!-- White headband across head -->
+      <rect x="-74" y="-134" width="56" height="9" fill="#F3ECDE"/>
 
-    <!-- Belt sash (gold gi accent) -->
-    <rect x="-36" y="18" width="50" height="8" fill="#C6A24C"/>
+      <!-- Torso wedge — sheared so body leans toward center (head over opponent), hip plants out-LEFT -->
+      <path d="M-58 -94 L -10 -94 L 4 16 L -36 36 L -94 30 L -114 -10 Z"/>
 
-    <!-- Standing leg (planted, near-vertical) -->
-    <path d="M-20 24 L -28 152" fill="none" stroke-width="26"/>
-    <ellipse cx="-30" cy="158" rx="22" ry="8"/>
+      <!-- Inner arm reaching across to grip opponent's neck/shoulder (will meet mirror at center) -->
+      <path d="M-12 -78 Q 22 -56 38 -36 L 38 -14 Q 14 -28 -18 -42 Z"/>
 
-    <!-- Kicking leg (horizontal front kick, foot extended right) -->
-    <path d="M-2 14 Q 60 10 124 12" fill="none" stroke-width="26"/>
-    <ellipse cx="138" cy="10" rx="18" ry="10"/>
+      <!-- Outer arm angled down across to grip opponent's near-side -->
+      <path d="M-66 -68 Q -36 -38 -8 -16 L -2 12 Q -42 -2 -78 -28 Z"/>
 
-    <!-- Back arm (chambered at hip, classic karate pull-back) -->
-    <path d="M-26 -86 L -28 -46" fill="none" stroke-width="18"/>
-    <circle cx="-30" cy="-40" r="12"/>
+      <!-- Back leg (outer, planted wide-LEFT in wrestling stance) -->
+      <path d="M-100 26 L -158 172 L -118 182 L -76 38 Z"/>
+      <ellipse cx="-138" cy="176" rx="24" ry="9"/>
 
-    <!-- Front arm raised in upward strike / overhead block (different angle from kick) -->
-    <path d="M-2 -94 Q 30 -130 64 -160" fill="none" stroke-width="20"/>
-    <circle cx="70" cy="-164" r="14"/>
+      <!-- Front leg (inner, planted closer to center) -->
+      <path d="M-44 32 L -34 172 L -78 182 L -84 36 Z"/>
+      <ellipse cx="-56" cy="176" rx="24" ry="9"/>
+    </g>
+    <use href="#grappler" transform="scale(-1 1)"/>
   </g>
 
-  <!-- ===== RIGHT FIGURE: shooter in controlled safety stance with PPE ===== -->
-  <g transform="translate(786 850)" fill="#2C0D15" stroke="#2C0D15" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Ponytail behind head -->
-    <path d="M-32 -130 Q -50 -100 -44 -64" fill="none" stroke-width="16"/>
+  <!-- ===== RIGHT FIGURE: shooter in same bold pictogram style with handgun ===== -->
+  <g transform="translate(786 850) scale(0.78)" fill="#2C0D15">
+    <!-- Ponytail tied on top (matching grappler style) -->
+    <path d="M-34 -180 Q -48 -188 -42 -198 Q -30 -196 -26 -184 Z"/>
+    <path d="M-14 -184 Q -2 -194 -2 -184 Q -6 -176 -16 -176 Z"/>
 
     <!-- Head -->
-    <circle cx="-12" cy="-128" r="26"/>
+    <circle cx="-20" cy="-148" r="42"/>
 
-    <!-- Ear protection (over-ear cup on near side) -->
-    <ellipse cx="-32" cy="-124" rx="11" ry="15"/>
-    <!-- Headband arc over crown -->
-    <path d="M-28 -148 Q -10 -164 12 -148" fill="none" stroke-width="6"/>
+    <!-- White band across head -->
+    <rect x="-58" y="-154" width="60" height="10" fill="#F3ECDE"/>
 
-    <!-- Safety glasses (lens hint) -->
-    <rect x="-8" y="-134" width="28" height="11" rx="2.5"/>
-    <rect x="-8" y="-134" width="28" height="11" rx="2.5" fill="#C6A24C" opacity="0.5"/>
+    <!-- Body wedge (vertical athletic stance) -->
+    <path d="M-52 -106 L 14 -106 Q 28 -80 36 30 L 4 50 L -52 50 L -82 30 Q -76 -60 -52 -106 Z"/>
 
-    <!-- Torso vertical -->
-    <line x1="-10" y1="-100" x2="-10" y2="26" stroke-width="46"/>
+    <!-- Both arms extended forward (single wedge silhouette) -->
+    <path d="M14 -76 Q 70 -56 124 -36 L 124 -8 Q 70 -28 8 -42 Z"/>
 
-    <!-- Back leg (slightly behind, planted) -->
-    <path d="M-22 28 Q -30 90 -38 152" fill="none" stroke-width="26"/>
-    <ellipse cx="-42" cy="158" rx="22" ry="8"/>
+    <!-- Hands gripping pistol -->
+    <ellipse cx="132" cy="-26" rx="20" ry="18"/>
 
-    <!-- Front leg (weight bearing) -->
-    <path d="M2 28 Q 14 92 22 152" fill="none" stroke-width="26"/>
-    <ellipse cx="26" cy="158" rx="22" ry="8"/>
+    <!-- COMPACT SEMI-AUTO PISTOL — solid silhouette -->
+    <rect x="148" y="-50" width="64" height="22" rx="3"/>
+    <rect x="208" y="-58" width="6" height="8"/>
+    <rect x="150" y="-58" width="6" height="8"/>
+    <path d="M148 -28 L 168 -28 L 174 8 L 138 8 Z"/>
+    <path d="M156 -25 L 184 -25 L 184 -8 L 172 -8 L 170 -12 L 156 -12 Z" fill="#F3ECDE"/>
+    <rect x="176" y="-23" width="4" height="11"/>
+    <rect x="212" y="-42" width="6" height="10" fill="#1A0810"/>
 
-    <!-- Both arms extended forward in isosceles grip -->
-    <path d="M-2 -80 Q 48 -64 100 -44" fill="none" stroke-width="32"/>
-    <!-- Subtle depth line of second arm just below -->
-    <path d="M0 -68 Q 48 -52 100 -34" fill="none" stroke-width="18" opacity="0.85"/>
-
-    <!-- Hands wrapping pistol grip -->
-    <ellipse cx="106" cy="-40" rx="14" ry="13"/>
-
-    <!-- COMPACT SEMI-AUTO PISTOL -->
-    <g stroke="none">
-      <!-- slide -->
-      <rect x="118" y="-56" width="52" height="15" rx="2"/>
-      <line x1="124" y1="-53" x2="124" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
-      <line x1="128" y1="-53" x2="128" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
-      <line x1="132" y1="-53" x2="132" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
-      <rect x="166" y="-61" width="4" height="6"/>
-      <rect x="120" y="-61" width="4" height="6"/>
-      <!-- grip going down into hand -->
-      <path d="M118 -41 L 132 -41 L 136 -22 L 112 -22 Z"/>
-      <!-- trigger guard cutout -->
-      <path d="M124 -39 L 144 -39 L 144 -28 L 136 -28 L 134 -32 L 124 -32 Z" fill="#F3ECDE"/>
-      <rect x="138" y="-38" width="2.5" height="8"/>
-      <rect x="170" y="-52" width="4" height="6" fill="#1A0810"/>
-    </g>
+    <!-- Wide stance legs -->
+    <path d="M-58 46 L -100 168 L -54 178 L -32 50 Z"/>
+    <ellipse cx="-78" cy="172" rx="22" ry="9"/>
+    <path d="M4 50 L 50 168 L 4 178 L -16 50 Z"/>
+    <ellipse cx="26" cy="172" rx="22" ry="9"/>
   </g>
 
   <!-- ===== CARD LABELS ===== -->
