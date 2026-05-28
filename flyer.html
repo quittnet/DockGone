@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Women's Self-Defense &amp; Firearm Safety — Lakewood, NJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1c1c1c; }
+  body { display: flex; justify-content: center; padding: 24px 0; }
+  .flyer { width: 1080px; height: 1920px; background: #58182A; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+  svg { display: block; width: 100%; height: 100%; }
+  /* Font-family fallbacks: Google Fonts in browser, locally-installed fonts for cairosvg PNG render */
+  .title  { font-family: 'Anton', 'Archivo Black', 'Big Shoulders', Impact, sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+  .label  { font-family: 'Montserrat', 'Work Sans', 'Outfit', sans-serif; font-weight: 800; }
+  .body   { font-family: 'Montserrat', 'Work Sans', 'Outfit', sans-serif; font-weight: 500; }
+  .italic { font-family: 'Montserrat', 'Work Sans', 'Outfit', sans-serif; font-weight: 500; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="flyer">
+<svg viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <pattern id="lattice" x="0" y="0" width="44" height="44" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0 L 44 0 M0 22 L 44 22" stroke="#F3ECDE" stroke-opacity="0.030" stroke-width="1"/>
+      <path d="M0 0 L 0 44 M22 0 L 22 44" stroke="#F3ECDE" stroke-opacity="0.030" stroke-width="1"/>
+    </pattern>
+
+    <!-- Corner ornament: clover-cross with pearl drops + leaf curves -->
+    <symbol id="ornament" viewBox="0 0 130 130">
+      <!-- Outer leaf curves -->
+      <g fill="none" stroke="#C6A24C" stroke-width="1.6" stroke-linecap="round">
+        <path d="M14 14 Q 60 16 78 64"/>
+        <path d="M14 14 Q 16 60 64 78"/>
+      </g>
+      <!-- Inner leaf accents -->
+      <g fill="#C6A24C">
+        <ellipse cx="46" cy="32" rx="9" ry="3" transform="rotate(-22 46 32)"/>
+        <ellipse cx="32" cy="46" rx="9" ry="3" transform="rotate(-68 32 46)"/>
+        <ellipse cx="62" cy="28" rx="6" ry="2.4" transform="rotate(-18 62 28)"/>
+        <ellipse cx="28" cy="62" rx="6" ry="2.4" transform="rotate(-72 28 62)"/>
+      </g>
+      <!-- Cross/clover at intersection -->
+      <g fill="#C6A24C">
+        <circle cx="14" cy="14" r="2"/>
+        <path d="M52 52 L 64 52 L 64 64 L 52 64 Z" opacity="0"/>
+      </g>
+      <!-- Pearl drops -->
+      <g fill="#E7B6BD" stroke="#C6A24C" stroke-width="0.9">
+        <circle cx="74" cy="58" r="5"/>
+        <circle cx="58" cy="74" r="5"/>
+        <circle cx="84" cy="76" r="4"/>
+        <circle cx="76" cy="84" r="4"/>
+      </g>
+      <!-- Central small cross -->
+      <g fill="#C6A24C">
+        <rect x="50" y="44" width="3" height="14"/>
+        <rect x="44" y="50" width="14" height="3"/>
+      </g>
+    </symbol>
+
+    <clipPath id="card-left-clip">
+      <rect x="64" y="640" width="460" height="490" rx="22" ry="22"/>
+    </clipPath>
+    <clipPath id="card-right-clip">
+      <rect x="556" y="640" width="460" height="490" rx="22" ry="22"/>
+    </clipPath>
+  </defs>
+
+  <!-- BACKGROUND -->
+  <rect width="1080" height="1920" fill="#58182A"/>
+  <rect width="1080" height="1920" fill="url(#lattice)"/>
+
+  <!-- THIN FRAME -->
+  <rect x="40" y="40" width="1000" height="1840" rx="6" ry="6" fill="none" stroke="#C6A24C" stroke-opacity="0.32" stroke-width="1"/>
+
+  <!-- CORNER ORNAMENTS — all four, symmetric -->
+  <use href="#ornament" x="28" y="28" width="130" height="130"/>
+  <g transform="translate(1052 28) scale(-1 1)"><use href="#ornament" width="130" height="130"/></g>
+  <g transform="translate(28 1892) scale(1 -1)"><use href="#ornament" width="130" height="130"/></g>
+  <g transform="translate(1052 1892) scale(-1 -1)"><use href="#ornament" width="130" height="130"/></g>
+
+  <!-- EYEBROW -->
+  <text class="body" x="540" y="178" text-anchor="middle" fill="#F3ECDE" font-size="22" letter-spacing="11">FOR WOMEN  •  BY WOMEN</text>
+
+  <!-- TITLE (3 lines, condensed display face) -->
+  <g class="title" fill="#F3ECDE" text-anchor="middle">
+    <text x="540" y="280" font-size="118">WOMEN'S</text>
+    <text x="540" y="378" font-size="118">SELF-DEFENSE</text>
+    <text x="540" y="476" font-size="118">&amp; FIREARM SAFETY</text>
+  </g>
+
+  <!-- GOLD DIVIDER -->
+  <rect x="495" y="510" width="90" height="2.5" fill="#C6A24C"/>
+
+  <!-- SUBTITLE -->
+  <g class="body" fill="#F3ECDE" text-anchor="middle" font-size="30">
+    <text x="540" y="568">Jujitsu and Gun Safety Classes</text>
+    <text x="540" y="608">for Women</text>
+  </g>
+
+  <!-- ===== ICON CARDS ===== -->
+  <!-- LEFT CARD background -->
+  <rect x="64" y="640" width="460" height="490" rx="22" ry="22" fill="#F3ECDE"/>
+  <!-- RIGHT CARD background -->
+  <rect x="556" y="640" width="460" height="490" rx="22" ry="22" fill="#F3ECDE"/>
+
+  <!-- Faint gold framing arc behind each figure -->
+  <g fill="none" stroke="#C6A24C" stroke-width="1.4" opacity="0.32">
+    <circle cx="294" cy="830" r="160"/>
+    <circle cx="786" cy="830" r="160"/>
+  </g>
+
+  <!-- ===== LEFT FIGURE: side-profile fighter, high front kick + extended strike ===== -->
+  <g transform="translate(294 850)" fill="#2C0D15" stroke="#2C0D15" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ponytail streaming back/left -->
+    <path d="M-32 -132 Q -78 -118 -98 -92" fill="none" stroke-width="18"/>
+    <path d="M-30 -122 Q -64 -106 -82 -82" fill="none" stroke-width="11" opacity="0.85"/>
+
+    <!-- Head -->
+    <circle cx="-12" cy="-128" r="26"/>
+
+    <!-- Torso (vertical thick stroke, neck to hip) -->
+    <line x1="-12" y1="-100" x2="-12" y2="22" stroke-width="44"/>
+
+    <!-- Belt sash (gold gi accent) -->
+    <rect x="-36" y="18" width="50" height="8" fill="#C6A24C"/>
+
+    <!-- Standing leg (planted, near-vertical) -->
+    <path d="M-20 24 L -28 152" fill="none" stroke-width="26"/>
+    <ellipse cx="-30" cy="158" rx="22" ry="8"/>
+
+    <!-- Kicking leg (horizontal front kick, foot extended right) -->
+    <path d="M-2 14 Q 60 10 124 12" fill="none" stroke-width="26"/>
+    <ellipse cx="138" cy="10" rx="18" ry="10"/>
+
+    <!-- Back arm (chambered at hip, classic karate pull-back) -->
+    <path d="M-26 -86 L -28 -46" fill="none" stroke-width="18"/>
+    <circle cx="-30" cy="-40" r="12"/>
+
+    <!-- Front arm raised in upward strike / overhead block (different angle from kick) -->
+    <path d="M-2 -94 Q 30 -130 64 -160" fill="none" stroke-width="20"/>
+    <circle cx="70" cy="-164" r="14"/>
+  </g>
+
+  <!-- ===== RIGHT FIGURE: shooter in controlled safety stance with PPE ===== -->
+  <g transform="translate(786 850)" fill="#2C0D15" stroke="#2C0D15" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ponytail behind head -->
+    <path d="M-32 -130 Q -50 -100 -44 -64" fill="none" stroke-width="16"/>
+
+    <!-- Head -->
+    <circle cx="-12" cy="-128" r="26"/>
+
+    <!-- Ear protection (over-ear cup on near side) -->
+    <ellipse cx="-32" cy="-124" rx="11" ry="15"/>
+    <!-- Headband arc over crown -->
+    <path d="M-28 -148 Q -10 -164 12 -148" fill="none" stroke-width="6"/>
+
+    <!-- Safety glasses (lens hint) -->
+    <rect x="-8" y="-134" width="28" height="11" rx="2.5"/>
+    <rect x="-8" y="-134" width="28" height="11" rx="2.5" fill="#C6A24C" opacity="0.5"/>
+
+    <!-- Torso vertical -->
+    <line x1="-10" y1="-100" x2="-10" y2="26" stroke-width="46"/>
+
+    <!-- Back leg (slightly behind, planted) -->
+    <path d="M-22 28 Q -30 90 -38 152" fill="none" stroke-width="26"/>
+    <ellipse cx="-42" cy="158" rx="22" ry="8"/>
+
+    <!-- Front leg (weight bearing) -->
+    <path d="M2 28 Q 14 92 22 152" fill="none" stroke-width="26"/>
+    <ellipse cx="26" cy="158" rx="22" ry="8"/>
+
+    <!-- Both arms extended forward in isosceles grip -->
+    <path d="M-2 -80 Q 48 -64 100 -44" fill="none" stroke-width="32"/>
+    <!-- Subtle depth line of second arm just below -->
+    <path d="M0 -68 Q 48 -52 100 -34" fill="none" stroke-width="18" opacity="0.85"/>
+
+    <!-- Hands wrapping pistol grip -->
+    <ellipse cx="106" cy="-40" rx="14" ry="13"/>
+
+    <!-- COMPACT SEMI-AUTO PISTOL -->
+    <g stroke="none">
+      <!-- slide -->
+      <rect x="118" y="-56" width="52" height="15" rx="2"/>
+      <line x1="124" y1="-53" x2="124" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
+      <line x1="128" y1="-53" x2="128" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
+      <line x1="132" y1="-53" x2="132" y2="-44" stroke="#1A0810" stroke-width="1.2"/>
+      <rect x="166" y="-61" width="4" height="6"/>
+      <rect x="120" y="-61" width="4" height="6"/>
+      <!-- grip going down into hand -->
+      <path d="M118 -41 L 132 -41 L 136 -22 L 112 -22 Z"/>
+      <!-- trigger guard cutout -->
+      <path d="M124 -39 L 144 -39 L 144 -28 L 136 -28 L 134 -32 L 124 -32 Z" fill="#F3ECDE"/>
+      <rect x="138" y="-38" width="2.5" height="8"/>
+      <rect x="170" y="-52" width="4" height="6" fill="#1A0810"/>
+    </g>
+  </g>
+
+  <!-- ===== CARD LABELS ===== -->
+  <text class="label" x="294" y="1042" text-anchor="middle" fill="#2C0D15" font-size="34" letter-spacing="6">JUJITSU</text>
+  <text class="body"  x="294" y="1086" text-anchor="middle" fill="#58182A" font-size="22" letter-spacing="4" font-weight="600">KICKBOXING  •  SELF-DEFENSE</text>
+
+  <text class="label" x="786" y="1042" text-anchor="middle" fill="#2C0D15" font-size="34" letter-spacing="6">FIREARM SAFETY</text>
+
+  <!-- ===== FORMAT OPTIONS ROW (applies to BOTH classes) ===== -->
+  <text class="body" x="540" y="1182" text-anchor="middle" fill="#F3ECDE" font-size="22" letter-spacing="5" font-style="italic" opacity="0.92">Each class offered as:</text>
+  <!-- Pills, equal width, centered side-by-side -->
+  <g>
+    <rect x="232" y="1208" width="280" height="58" rx="29" ry="29" fill="#E7B6BD"/>
+    <text class="label" x="372" y="1245" text-anchor="middle" fill="#58182A" font-size="22" letter-spacing="5">PRIVATE LESSONS</text>
+
+    <rect x="568" y="1208" width="280" height="58" rx="29" ry="29" fill="#E7B6BD"/>
+    <text class="label" x="708" y="1245" text-anchor="middle" fill="#58182A" font-size="22" letter-spacing="5">GROUP CLASSES</text>
+  </g>
+
+  <!-- ===== LOCATION BANNER ===== -->
+  <g>
+    <rect x="278" y="1316" width="16" height="16" fill="#C6A24C" transform="rotate(45 286 1324)"/>
+    <text class="label" x="540" y="1336" text-anchor="middle" fill="#F3ECDE" font-size="34" letter-spacing="9">LAKEWOOD, NJ</text>
+    <rect x="786" y="1316" width="16" height="16" fill="#C6A24C" transform="rotate(45 794 1324)"/>
+  </g>
+
+  <!-- ===== INSTRUCTOR CARDS ===== -->
+  <!-- LEFT INSTRUCTOR CARD -->
+  <rect x="64" y="1410" width="460" height="240" rx="20" ry="20" fill="#F3ECDE"/>
+  <circle cx="294" cy="1410" r="28" fill="#E7B6BD"/>
+  <g transform="translate(269 1385) scale(2.1)" fill="#58182A">
+    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+  </g>
+  <text class="label" x="294" y="1482" text-anchor="middle" fill="#58182A" font-size="20" letter-spacing="5" font-weight="700">JUJITSU INSTRUCTOR</text>
+  <text class="label" x="294" y="1532" text-anchor="middle" fill="#2C0D15" font-size="38" font-weight="800">Chana Garnick</text>
+  <text class="italic" x="294" y="1564" text-anchor="middle" fill="#58182A" font-size="22">Purple Belt</text>
+  <text class="label" x="294" y="1616" text-anchor="middle" fill="#2C0D15" font-size="34" font-weight="800">(732) 239-3112</text>
+
+  <!-- RIGHT INSTRUCTOR CARD -->
+  <rect x="556" y="1410" width="460" height="240" rx="20" ry="20" fill="#F3ECDE"/>
+  <circle cx="786" cy="1410" r="28" fill="#E7B6BD"/>
+  <g transform="translate(761 1385) scale(2.1)" fill="#58182A">
+    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+  </g>
+  <text class="label" x="786" y="1482" text-anchor="middle" fill="#58182A" font-size="20" letter-spacing="5" font-weight="700">FIREARMS INSTRUCTOR</text>
+  <text class="label" x="786" y="1532" text-anchor="middle" fill="#2C0D15" font-size="38" font-weight="800">Yael Quittner</text>
+  <text class="italic" x="786" y="1564" text-anchor="middle" fill="#58182A" font-size="22">USCCA Certified</text>
+  <text class="label" x="786" y="1616" text-anchor="middle" fill="#2C0D15" font-size="34" font-weight="800">(347) 232-9000</text>
+
+  <!-- ===== CONTACT LINE ===== -->
+  <text class="body" x="540" y="1702" text-anchor="middle" fill="#F3ECDE" font-size="22" letter-spacing="11" font-weight="600">CALL  •  TEXT  •  WHATSAPP</text>
+
+  <!-- ===== FOOTER BAND ===== -->
+  <line x1="100" y1="1742" x2="980" y2="1742" stroke="#C6A24C" stroke-opacity="0.7" stroke-width="1"/>
+  <g class="title" fill="#F3ECDE" text-anchor="middle">
+    <text x="540" y="1798" font-size="44" letter-spacing="2">EMPOWERING WOMEN</text>
+    <text x="540" y="1846" font-size="44" letter-spacing="2">TO PROTECT THEMSELVES</text>
+  </g>
+  <line x1="100" y1="1872" x2="980" y2="1872" stroke="#C6A24C" stroke-opacity="0.7" stroke-width="1"/>
+
+</svg>
+</div>
+</body>
+</html>
