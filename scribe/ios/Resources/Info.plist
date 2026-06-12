@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Scribe</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Privacy usage strings. The app crashes on first use of a capability if
+	     the matching key is missing. -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Scribe records audio so it can transcribe your meetings and notes.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Scribe transcribes your recordings on this device using speech recognition.</string>
+
+	<!-- iOS 17+ access keys -->
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Scribe adds the events it finds in your recordings to your calendar.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Scribe adds the to-dos it finds in your recordings to your reminders.</string>
+
+	<!-- Legacy keys for pre-iOS 17 compatibility -->
+	<key>NSCalendarsUsageDescription</key>
+	<string>Scribe adds the events it finds in your recordings to your calendar.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Scribe adds the to-dos it finds in your recordings to your reminders.</string>
+</dict>
+</plist>
