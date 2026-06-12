@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts",
+    "start:local": "node --env-file=.env dist/server.js",
+    "dev": "node --env-file=.env --import tsx --watch src/server.ts",
     "test": "node --import tsx --test test/*.test.ts"
   },
   "dependencies": {

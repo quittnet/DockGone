@@ -15,15 +15,22 @@ cd scribe/backend
 npm install
 cp .env.example .env       # then put your real ANTHROPIC_API_KEY in .env
 npm run build
-npm start                  # listens on http://localhost:8787 (override with PORT)
+npm run start:local        # loads .env, listens on http://localhost:8787 (override with PORT)
 ```
 
-`.env` is loaded by your shell/process manager — or export the vars directly:
+`start:local` reads `.env` via Node's `--env-file`. In production (Render/Fly/etc.) use
+`npm start` and set the env vars in the host's config instead. You can also export directly:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 npm start
 ```
+
+> **Testing from the iOS Simulator:** point the app's Settings at `http://localhost:8787`.
+> The Simulator shares your Mac's network, and the app already allows plain-HTTP to
+> localhost for development (`NSAllowsLocalNetworking`). A **physical iPhone** can't reach
+> your Mac's `localhost` — deploy the backend (HTTPS) and use that URL, or use your Mac's
+> LAN IP with an ATS exception.
 
 ### Try it
 
