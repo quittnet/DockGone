@@ -1,9 +1,9 @@
 import Foundation
 
-/// Lightweight, UserDefaults-backed preferences for the Moom-inspired automation
-/// features. Profiles themselves live in `ProfileStore`; this just records which
-/// profile (if any) is wired to each trigger, plus the global-shortcut toggle.
-enum Settings {
+/// UserDefaults-backed preferences for the automation features. Profiles
+/// themselves live in `ProfileStore`; this records which profile (if any) is
+/// wired to each trigger, plus the global-shortcut toggle.
+enum Prefs {
 
     private static let defaults = UserDefaults.standard
 
@@ -11,6 +11,7 @@ enum Settings {
         static let arrangeShortcuts = "Stagehand.arrangeShortcutsEnabled"
         static let displayTrigger   = "Stagehand.displayChangeProfileID"
         static let launchTrigger    = "Stagehand.launchRestoreProfileID"
+        static let didExplainAX     = "Stagehand.didShowAccessibilityExplainer"
     }
 
     /// Whether the global window-arrange hotkeys are active. Default on.
@@ -29,5 +30,11 @@ enum Settings {
     static var launchRestoreProfileID: UUID? {
         get { defaults.string(forKey: Key.launchTrigger).flatMap(UUID.init(uuidString:)) }
         set { defaults.set(newValue?.uuidString, forKey: Key.launchTrigger) }
+    }
+
+    /// Whether the first-launch Accessibility explainer has already been shown.
+    static var didShowAccessibilityExplainer: Bool {
+        get { defaults.bool(forKey: Key.didExplainAX) }
+        set { defaults.set(newValue, forKey: Key.didExplainAX) }
     }
 }

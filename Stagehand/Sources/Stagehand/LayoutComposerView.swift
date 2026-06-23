@@ -8,7 +8,7 @@ import AppKit
 /// time, so a composed layout restores through exactly the same path as a
 /// captured one — launching each app and placing its window.
 struct LayoutComposerView: View {
-    @ObservedObject var store: ProfileStore
+    @EnvironmentObject var store: ProfileStore
     @Environment(\.dismiss) private var dismiss
 
     struct Assignment: Identifiable {

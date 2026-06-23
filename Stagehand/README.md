@@ -120,27 +120,35 @@ doesn't attempt it (windows are positioned on the current Space).
 
 ## File layout
 
+The app is built on the **SwiftUI App lifecycle** — a `Window` scene + a
+`MenuBarExtra`, with a tiny `NSApplicationDelegateAdaptor` for the few non-scene
+bits. SwiftUI owns the window, sheets, menu-bar item, and the standard
+App/Edit/Window menus, so there's no hand-built `NSWindow`/`NSMenu`/`NSStatusItem`
+to go wrong.
+
 ```
 Stagehand/
 ├── Package.swift                         (links Carbon for global hotkeys)
-├── Resources/Info.plist                  LSUIElement bundle metadata
+├── Resources/Info.plist                  full-app bundle metadata
 ├── make_icon.swift                       generates AppIcon.icns
 ├── install.sh                            build → icon → .app → sign → launch
 └── Sources/Stagehand/
-    ├── main.swift                        app entry point (.regular)
-    ├── AppDelegate.swift                 menu bar, save/restore, arrange + automation wiring
-    ├── MainMenu.swift                    standard App / Edit / Window menus
+    ├── StagehandApp.swift                @main: Window scene + MenuBarExtra
+    ├── AppDelegate.swift                 adaptor: first-launch prompt, hotkeys, triggers
+    ├── AppModel.swift                    shared state + action router (ObservableObject)
+    ├── RootView.swift                    main window: profiles sidebar + detail + toolbar
+    ├── MenuBarContent.swift              the MenuBarExtra dropdown
+    ├── SettingsSheet.swift               shortcuts / automation / login / permissions
+    ├── LayoutComposerView.swift          "Create Layout" — pick apps + regions, preview
+    ├── AppCatalog.swift                  enumerate installed apps for the composer
+    ├── TextPrompt.swift                  small NSAlert helpers (name a profile, info)
     ├── Models.swift                      Codable profile / app / window model
     ├── AXBridge.swift                    Accessibility + private CGS/AX helpers
     ├── AccessibilityManager.swift        permission checks & explainer prompts
     ├── LayoutEngine.swift                capture + restore logic
     ├── WindowArranger.swift              snap the focused window (halves/quarters/thirds…)
-    ├── AppCatalog.swift                  enumerate installed apps for the composer
-    ├── LayoutComposerView.swift          "Create Layout" — pick apps + regions, preview
     ├── HotKeyManager.swift               Carbon global hotkeys (Rectangle-style defaults)
-    ├── Settings.swift                    UserDefaults: shortcut toggle + trigger profiles
+    ├── Prefs.swift                       UserDefaults: shortcut toggle + trigger profiles
     ├── ProfileStore.swift                JSON persistence (Application Support)
-    ├── LoginItem.swift                   SMAppService launch-at-login
-    ├── ProfileManagerView.swift          SwiftUI manager UI
-    └── ProfileManagerWindowController.swift  hosts the SwiftUI window
+    └── LoginItem.swift                   SMAppService launch-at-login
 ```
