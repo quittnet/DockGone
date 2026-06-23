@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 /// SwiftUI detail/management UI for profiles. The menu bar handles the common
 /// quick actions (save / restore); this window is where you rename, delete and
@@ -14,12 +15,36 @@ struct ProfileManagerView: View {
     @State private var renameText: String = ""
 
     var body: some View {
-        NavigationSplitView {
-            sidebar
-        } detail: {
-            detail
+        VStack(spacing: 0) {
+            NavigationSplitView {
+                sidebar
+            } detail: {
+                detail
+            }
+            Divider()
+            storageFooter
         }
         .frame(minWidth: 620, minHeight: 420)
+    }
+
+    /// Shows where profiles live on disk and offers a quick reveal in Finder.
+    private var storageFooter: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "externaldrive").foregroundStyle(.secondary)
+            Text(store.storageURL.path)
+                .font(.caption.monospaced())
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .help(store.storageURL.path)
+            Spacer()
+            Button("Reveal in Finder") {
+                NSWorkspace.shared.activateFileViewerSelecting([store.storageURL])
+            }
+            .controlSize(.small)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
     }
 
     // MARK: Sidebar
@@ -64,8 +89,13 @@ struct ProfileManagerView: View {
                 renameText: $renameText,
                 onRestore: { onRestore(profile) },
                 onCommitRename: {
-                    store.renameProfile(id: id, to: renameText)
-                    renaming = nil
+                    // Keep the field open on rejection (blank or duplicate name)
+                    // so the edit isn't silently dropped.
+                    if store.renameProfile(id: id, to: renameText) {
+                        renaming = nil
+                    } else {
+                        NSSound.beep()
+                    }
                 },
                 onBeginRename: { beginRename(profile) },
                 onDelete: { store.deleteProfile(id: id) }

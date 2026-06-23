@@ -28,10 +28,16 @@ final class ProfileManagerWindowController: NSWindowController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func show() {
-        let view = ProfileManagerView(store: ProfileStore.shared) { [weak self] profile in
-            self?.onRestore?(profile)
+        // Build the SwiftUI host once and keep it. Rebuilding on every open would
+        // throw away the view's @State (current selection, an in-progress rename)
+        // each time the window is reopened. onRestore is read lazily inside the
+        // closure, so installing it after init is fine.
+        if window?.contentView == nil {
+            let view = ProfileManagerView(store: ProfileStore.shared) { [weak self] profile in
+                self?.onRestore?(profile)
+            }
+            window?.contentView = NSHostingView(rootView: view)
         }
-        window?.contentView = NSHostingView(rootView: view)
         NSApp.activate(ignoringOtherApps: true)
         showWindow(nil)
         window?.makeKeyAndOrderFront(nil)

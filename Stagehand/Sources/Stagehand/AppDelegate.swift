@@ -155,10 +155,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        let windowCount = apps.reduce(0) { $0 + $1.windows.count }
         ProfileStore.shared.saveProfile(named: trimmed, apps: apps)
         presentInfo("Layout saved",
-                    "“\(trimmed)” captured \(apps.count) apps and \(windowCount) windows.")
+                    "“\(trimmed)” captured \(apps.count) apps and \(apps.windowCount) windows.")
     }
 
     @objc private func restoreProfile(_ sender: NSMenuItem) {
@@ -219,11 +218,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    /// A friendly default name that won't collide with existing profiles.
+    /// A friendly default name that won't collide with existing profiles, so the
+    /// prefilled value never silently overwrites one if accepted as-is.
     private func suggestedProfileName() -> String {
-        let bases = ["Work", "Study", "Deep Focus"]
         let existing = Set(ProfileStore.shared.profiles.map { $0.name.lowercased() })
-        return bases.first { !existing.contains($0.lowercased()) } ?? "Layout"
+        if let preset = ["Work", "Study", "Deep Focus"].first(where: {
+            !existing.contains($0.lowercased())
+        }) {
+            return preset
+        }
+        var n = 1
+        while existing.contains("layout \(n)") { n += 1 }
+        return "Layout \(n)"
     }
 
     private func promptForText(title: String, message: String, defaultValue: String) -> String? {

@@ -70,5 +70,11 @@ struct LayoutProfile: Codable, Identifiable, Equatable {
     }
 
     /// Total window count across all apps — handy for the menu subtitle.
-    var windowCount: Int { apps.reduce(0) { $0 + $1.windows.count } }
+    var windowCount: Int { apps.windowCount }
+}
+
+extension Array where Element == SavedApp {
+    /// Total number of captured windows across these apps. Single source of truth
+    /// for the count shown in the menu, the save confirmation, and the manager UI.
+    var windowCount: Int { reduce(0) { $0 + $1.windows.count } }
 }

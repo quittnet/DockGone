@@ -106,14 +106,17 @@ enum LayoutEngine {
             }
         }
 
-        // 2. Wait for the app to publish its windows (newly launched apps take a
-        //    beat). Poll up to ~5s, then give up gracefully.
+        // 2. Wait for the app to publish its standard windows. Restore applies
+        //    the same isStandardWindow filter capture used, so a palette or sheet
+        //    can neither satisfy the wait nor absorb a saved frame. Newly launched
+        //    apps take a beat — poll up to ~10s (heavy apps cold-launch slowly),
+        //    then give up gracefully.
         let appElement = AXUIElementCreateApplication(runningApp.processIdentifier)
-        var liveWindows = AX.windows(of: appElement)
+        var liveWindows = standardWindows(of: appElement)
         var attempts = 0
-        while liveWindows.isEmpty && attempts < 20 {
+        while liveWindows.isEmpty && attempts < 40 {
             try? await Task.sleep(nanoseconds: 250_000_000)
-            liveWindows = AX.windows(of: appElement)
+            liveWindows = standardWindows(of: appElement)
             attempts += 1
         }
         guard !liveWindows.isEmpty else {
@@ -121,13 +124,9 @@ enum LayoutEngine {
                                   warning: "\(savedApp.name) opened but exposed no windows")
         }
 
-        // 3. Apply each saved frame to a matched live window.
-        var available = liveWindows
+        // 3. Pair saved windows to live windows, then apply each saved frame.
         var positioned = 0
-        for savedWindow in savedApp.windows {
-            guard let index = matchIndex(for: savedWindow, in: available) else { continue }
-            let target = available.remove(at: index)
-
+        for (savedWindow, target) in pairings(saved: savedApp.windows, live: liveWindows) {
             // Un-minimize before moving (you can't reposition a minimized window),
             // then re-apply the saved minimized state afterwards.
             if AX.bool(target, kAXMinimizedAttribute as String) == true {
@@ -146,17 +145,38 @@ enum LayoutEngine {
         return RestoreOutcome(appName: savedApp.name, positioned: positioned, warning: warning)
     }
 
-    /// Prefer an exact title match (handles reordered windows); fall back to the
-    /// first still-available window so single-window apps always get placed.
-    private static func matchIndex(for savedWindow: SavedWindow,
-                                   in windows: [AXUIElement]) -> Int? {
-        if !savedWindow.title.isEmpty,
-           let exact = windows.firstIndex(where: {
-               AX.string($0, kAXTitleAttribute as String) == savedWindow.title
-           }) {
-            return exact
+    /// An app's standard document/app windows — the same filter capture uses, so
+    /// restore never targets a palette or sheet.
+    private static func standardWindows(of appElement: AXUIElement) -> [AXUIElement] {
+        AX.windows(of: appElement).filter { AX.isStandardWindow($0) }
+    }
+
+    /// Pair each saved window with a live window in two passes: first by exact
+    /// title (so reordered windows follow their title), then positionally for
+    /// whatever is left over (so a window whose title changed, or that was never
+    /// titled, still gets placed in order). Resolving exact matches first means a
+    /// titled saved window that finds no match can never steal the window a later
+    /// saved window would have matched exactly.
+    private static func pairings(saved: [SavedWindow],
+                                 live: [AXUIElement]) -> [(SavedWindow, AXUIElement)] {
+        var remaining = live
+        var pairs: [(SavedWindow, AXUIElement)] = []
+        var leftovers: [SavedWindow] = []
+
+        for window in saved {
+            if !window.title.isEmpty,
+               let index = remaining.firstIndex(where: {
+                   AX.string($0, kAXTitleAttribute as String) == window.title
+               }) {
+                pairs.append((window, remaining.remove(at: index)))
+            } else {
+                leftovers.append(window)
+            }
         }
-        return windows.isEmpty ? nil : 0
+        for window in leftovers where !remaining.isEmpty {
+            pairs.append((window, remaining.removeFirst()))
+        }
+        return pairs
     }
 
     /// Locate the app on disk: by bundle id first (survives the app moving), then

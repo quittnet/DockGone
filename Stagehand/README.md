@@ -70,9 +70,9 @@ them only drops the optional Space annotation.
 
 For each saved app Stagehand finds it running or launches it
 (`NSWorkspace.openApplication`, resolved by bundle id with the captured path as a
-fallback), polls up to ~5s for its windows to appear, matches saved windows to
-live ones (by title, then by order), and applies the saved frame via the
-Accessibility API.
+fallback), polls up to ~10s for its windows to appear, matches saved windows to
+live ones (standard windows only — exact title first, then positionally for the
+rest), and applies the saved frame via the Accessibility API.
 
 ### Coordinates & Spaces
 

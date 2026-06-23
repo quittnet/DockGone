@@ -20,12 +20,17 @@ enum LoginItem {
     /// Turn launch-at-login on or off. Throws if the system rejects the change
     /// (e.g. the bundle isn't registered with Launch Services yet).
     static func setEnabled(_ enabled: Bool) throws {
+        let status = SMAppService.mainApp.status
         if enabled {
-            if SMAppService.mainApp.status != .enabled {
+            if status != .enabled {
                 try SMAppService.mainApp.register()
             }
         } else {
-            try SMAppService.mainApp.unregister()
+            // unregister() throws kSMErrorJobNotFound when nothing is registered,
+            // so only call it when there's actually a registration to remove.
+            if status != .notRegistered {
+                try SMAppService.mainApp.unregister()
+            }
         }
     }
 }

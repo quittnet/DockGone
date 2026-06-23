@@ -4,13 +4,12 @@ import Combine
 /// Owns the list of layout profiles and persists them to
 /// `~/Library/Application Support/Stagehand/profiles.json`.
 ///
-/// It's an `ObservableObject` so the SwiftUI manager view updates live, and it
-/// also posts `didChange` for the AppKit menu, which rebuilds itself on open.
+/// It's an `ObservableObject` so the SwiftUI manager view updates live. The
+/// AppKit menu doesn't observe it — it rebuilds from `profiles` on every open
+/// (`menuNeedsUpdate`), which always reflects the latest state.
 final class ProfileStore: ObservableObject {
 
     static let shared = ProfileStore()
-
-    static let didChange = Notification.Name("ProfileStore.didChange")
 
     @Published private(set) var profiles: [LayoutProfile] = []
 
@@ -36,7 +35,8 @@ final class ProfileStore: ObservableObject {
         load()
     }
 
-    /// Absolute path to the JSON file — shown in the UI so users can find it.
+    /// Absolute location of the JSON file — surfaced in the manager window so
+    /// users can find (and back up) their profiles.
     var storageURL: URL { fileURL }
 
     // MARK: Mutations
@@ -60,21 +60,22 @@ final class ProfileStore: ObservableObject {
         return profile
     }
 
-    /// Replace the captured layout of an existing profile (by id) with `apps`.
-    func updateProfile(id: UUID, apps: [SavedApp]) {
-        guard let index = profiles.firstIndex(where: { $0.id == id }) else { return }
-        profiles[index].apps = apps
-        profiles[index].updatedAt = Date()
-        persist()
-    }
-
-    func renameProfile(id: UUID, to newName: String) {
+    /// Rename a profile. Rejected (returns false) if the name is blank or would
+    /// collide case-insensitively with another profile — `saveProfile` dedupes by
+    /// name, so a duplicate would let a later save silently clobber one of them.
+    @discardableResult
+    func renameProfile(id: UUID, to newName: String) -> Bool {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty,
-              let index = profiles.firstIndex(where: { $0.id == id }) else { return }
+              let index = profiles.firstIndex(where: { $0.id == id }) else { return false }
+        let collides = profiles.contains {
+            $0.id != id && $0.name.caseInsensitiveCompare(trimmed) == .orderedSame
+        }
+        guard !collides else { return false }
         profiles[index].name = trimmed
         profiles[index].updatedAt = Date()
         persist()
+        return true
     }
 
     func deleteProfile(id: UUID) {
@@ -89,9 +90,18 @@ final class ProfileStore: ObservableObject {
     // MARK: Disk I/O
 
     private func load() {
-        guard let data = try? Data(contentsOf: fileURL) else { return }
-        if let decoded = try? decoder.decode([LayoutProfile].self, from: data) {
-            profiles = decoded
+        guard let data = try? Data(contentsOf: fileURL) else { return }  // no file yet
+        do {
+            profiles = try decoder.decode([LayoutProfile].self, from: data)
+        } catch {
+            // The file exists but won't parse (corruption, or an incompatible
+            // schema from another version). Do NOT start empty and let the next
+            // save atomically overwrite it — move it aside first so the user can
+            // recover their profiles.
+            let backup = fileURL.deletingLastPathComponent()
+                .appendingPathComponent("profiles.corrupt-\(Int(Date().timeIntervalSince1970)).json")
+            try? FileManager.default.moveItem(at: fileURL, to: backup)
+            NSLog("Stagehand: couldn't decode profiles.json (\(error)); preserved as \(backup.lastPathComponent)")
         }
     }
 
@@ -102,6 +112,5 @@ final class ProfileStore: ObservableObject {
         } catch {
             NSLog("Stagehand: failed to persist profiles: \(error)")
         }
-        NotificationCenter.default.post(name: Self.didChange, object: self)
     }
 }
