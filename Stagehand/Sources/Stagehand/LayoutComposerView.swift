@@ -161,20 +161,7 @@ struct LayoutComposerView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(Color.secondary.opacity(0.12))
                 ForEach(assignments) { assignment in
-                    let unit = WindowArranger.unitRect(for: assignment.region)
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.accentColor.opacity(0.22))
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.accentColor.opacity(0.7)))
-                        .overlay(
-                            VStack(spacing: 2) {
-                                Image(nsImage: assignment.app.icon).resizable().frame(width: 16, height: 16)
-                                Text(assignment.app.name).font(.system(size: 9)).lineLimit(1)
-                            }
-                            .padding(2)
-                        )
-                        .frame(width: max(0, unit.width * screenW - 2),
-                               height: max(0, unit.height * screenH - 2))
-                        .offset(x: unit.minX * screenW + 1, y: unit.minY * screenH + 1)
+                    PreviewTile(assignment: assignment, screenW: screenW, screenH: screenH)
                 }
             }
             .frame(width: screenW, height: screenH)
@@ -239,5 +226,44 @@ struct LayoutComposerView: View {
         }
         store.saveProfile(named: trimmedName, apps: savedApps)
         dismiss()
+    }
+}
+
+/// One app's region drawn inside the preview schematic. Pulled out as its own
+/// view (with the geometry pre-computed into typed locals) so the Swift
+/// type-checker doesn't choke on a single huge view expression.
+private struct PreviewTile: View {
+    let assignment: LayoutComposerView.Assignment
+    let screenW: CGFloat
+    let screenH: CGFloat
+
+    var body: some View {
+        let unit = WindowArranger.unitRect(for: assignment.region)
+        let tileW: CGFloat = max(0, unit.width * screenW - 2)
+        let tileH: CGFloat = max(0, unit.height * screenH - 2)
+        let offsetX: CGFloat = unit.minX * screenW + 1
+        let offsetY: CGFloat = unit.minY * screenH + 1
+
+        return RoundedRectangle(cornerRadius: 4)
+            .fill(Color.accentColor.opacity(0.22))
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(Color.accentColor.opacity(0.7))
+            )
+            .overlay(label)
+            .frame(width: tileW, height: tileH)
+            .offset(x: offsetX, y: offsetY)
+    }
+
+    private var label: some View {
+        VStack(spacing: 2) {
+            Image(nsImage: assignment.app.icon)
+                .resizable()
+                .frame(width: 16, height: 16)
+            Text(assignment.app.name)
+                .font(.system(size: 9))
+                .lineLimit(1)
+        }
+        .padding(2)
     }
 }
