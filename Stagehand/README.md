@@ -31,6 +31,15 @@ Closing the window keeps it running in the menu bar. Launches at login via
   as a profile. Restoring launches the apps and places them — great for building a
   workspace from scratch.
 - **Launch at login** via `SMAppService.mainApp` (macOS 13+) — toggle in the menu.
+- **Open at startup (per profile)**: each profile has an *Open at startup* checkbox
+  (in its detail view). When Stagehand launches at login, every flagged profile is
+  restored in order. (Only fires when "Launch at login" is on.)
+- **Name Mission Control desktops (experimental)**: *Name Desktops…* (menu bar or
+  Settings) lets you set Mission Control Space names, and each profile has a "Name
+  this Desktop" button. This uses **private, undocumented macOS APIs** resolved at
+  runtime — Apple exposes no supported way to do it. It may need a Dock relaunch to
+  show, and can stop working on a macOS update; the UI says so and degrades to
+  "unavailable" rather than crashing if the symbols are gone.
 - **Graceful failures**: an app that's no longer installed (or opens no windows)
   is skipped, and a `⚠︎` summary of what was skipped appears at the bottom of the
   menu after a restore.
@@ -141,6 +150,8 @@ Stagehand/
     ├── SettingsSheet.swift               shortcuts / automation / login / permissions
     ├── LayoutComposerView.swift          "Create Layout" — pick apps + regions, preview
     ├── AppCatalog.swift                  enumerate installed apps for the composer
+    ├── SpaceManager.swift                private CGS Space APIs (read/attempt-name desktops)
+    ├── SpacesView.swift                  "Name Desktops…" experimental UI
     ├── TextPrompt.swift                  small NSAlert helpers (name a profile, info)
     ├── Models.swift                      Codable profile / app / window model
     ├── AXBridge.swift                    Accessibility + private CGS/AX helpers

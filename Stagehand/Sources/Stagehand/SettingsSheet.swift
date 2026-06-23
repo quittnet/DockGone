@@ -9,8 +9,8 @@ struct SettingsSheet: View {
 
     @State private var arrangeShortcuts = Prefs.arrangeShortcutsEnabled
     @State private var displayProfile: UUID? = Prefs.displayChangeProfileID
-    @State private var launchProfile: UUID? = Prefs.launchRestoreProfileID
     @State private var launchAtLogin = LoginItem.isEnabled
+    @State private var showSpaces = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,14 +33,6 @@ struct SettingsSheet: View {
                         }
                     }
                     .onChange(of: displayProfile) { Prefs.displayChangeProfileID = $0 }
-
-                    Picker("Restore at launch", selection: $launchProfile) {
-                        Text("Off").tag(UUID?.none)
-                        ForEach(store.profiles) { profile in
-                            Text(profile.name).tag(UUID?.some(profile.id))
-                        }
-                    }
-                    .onChange(of: launchProfile) { Prefs.launchRestoreProfileID = $0 }
                 }
 
                 Section("Startup") {
@@ -49,6 +41,17 @@ struct SettingsSheet: View {
                             do { try LoginItem.setEnabled(newValue) }
                             catch { launchAtLogin = LoginItem.isEnabled }   // revert on failure
                         }
+                    Text("To auto-restore a layout at login, turn on “Open at startup” on each "
+                        + "profile (in its detail view). Flagged profiles restore in order when "
+                        + "Stagehand launches at login.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+
+                Section("Mission Control") {
+                    Button("Name Desktops…") { showSpaces = true }
+                    Text("Experimental: name Mission Control desktops (Spaces) via private "
+                        + "macOS APIs. May require relaunching the Dock and can break on macOS updates.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
 
                 Section("Permissions") {
@@ -76,7 +79,8 @@ struct SettingsSheet: View {
             }
             .padding(12)
         }
-        .frame(width: 480, height: 440)
+        .frame(width: 480, height: 460)
         .onAppear { model.refreshTrust() }
+        .sheet(isPresented: $showSpaces) { SpacesView() }
     }
 }

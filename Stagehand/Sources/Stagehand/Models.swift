@@ -60,13 +60,32 @@ struct LayoutProfile: Codable, Identifiable, Equatable {
     var createdAt: Date
     var updatedAt: Date
     var apps: [SavedApp]
+    /// When true, this profile is auto-restored when Stagehand launches at login.
+    var openAtStartup: Bool
 
-    init(id: UUID = UUID(), name: String, apps: [SavedApp]) {
+    init(id: UUID = UUID(), name: String, apps: [SavedApp], openAtStartup: Bool = false) {
         self.id = id
         self.name = name
         self.createdAt = Date()
         self.updatedAt = self.createdAt
         self.apps = apps
+        self.openAtStartup = openAtStartup
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, createdAt, updatedAt, apps, openAtStartup
+    }
+
+    /// Custom decoder so profiles written before `openAtStartup` existed still
+    /// load (the field just defaults to false).
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        createdAt = try c.decode(Date.self, forKey: .createdAt)
+        updatedAt = try c.decode(Date.self, forKey: .updatedAt)
+        apps = try c.decode([SavedApp].self, forKey: .apps)
+        openAtStartup = try c.decodeIfPresent(Bool.self, forKey: .openAtStartup) ?? false
     }
 
     /// Total window count across all apps — handy for the menu subtitle.

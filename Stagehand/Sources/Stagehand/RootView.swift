@@ -25,6 +25,7 @@ struct RootView: View {
         .sheet(isPresented: $model.showSettings) {
             SettingsSheet().environmentObject(store).environmentObject(model)
         }
+        .sheet(isPresented: $model.showSpaces) { SpacesView() }
         .onAppear { model.refreshTrust() }
     }
 
@@ -171,6 +172,25 @@ private struct ProfileDetailView: View {
             }
             Text("Updated \(profile.updatedAt.formatted(date: .abbreviated, time: .shortened))")
                 .font(.caption).foregroundStyle(.secondary)
+
+            HStack(spacing: 16) {
+                Toggle("Open at startup", isOn: Binding(
+                    get: { profile.openAtStartup },
+                    set: { store.setOpenAtStartup(id: profile.id, $0) }
+                ))
+                .toggleStyle(.checkbox)
+                .help("Auto-restore this layout when Stagehand launches at login")
+
+                Button {
+                    model.nameCurrentSpace(after: profile)
+                } label: {
+                    Label("Name this Desktop", systemImage: "rectangle.on.rectangle")
+                }
+                .help("Name the current Mission Control desktop after this profile (experimental)")
+
+                Spacer()
+            }
+
             Divider()
             List {
                 ForEach(profile.apps, id: \.bundleID) { app in

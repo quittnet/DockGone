@@ -22,7 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             AppModel.shared.applyArrangeShortcuts()
-            self.scheduleLaunchRestore()
+            self.scheduleStartupRestore()
         }
         NotificationCenter.default.addObserver(
             self, selector: #selector(displaysChanged),
@@ -48,11 +48,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func scheduleLaunchRestore() {
-        guard let id = Prefs.launchRestoreProfileID else { return }
+    private func scheduleStartupRestore() {
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            AppModel.shared.restoreProfileSilently(id: id)
+            AppModel.shared.restoreStartupProfiles()
         }
     }
 }

@@ -83,6 +83,14 @@ final class ProfileStore: ObservableObject {
         persist()
     }
 
+    /// Flag (or unflag) a profile to be auto-restored at startup/login.
+    func setOpenAtStartup(id: UUID, _ value: Bool) {
+        guard let index = profiles.firstIndex(where: { $0.id == id }) else { return }
+        profiles[index].openAtStartup = value
+        profiles[index].updatedAt = Date()
+        persist()
+    }
+
     func profile(id: UUID) -> LayoutProfile? {
         profiles.first { $0.id == id }
     }

@@ -38,6 +38,11 @@ struct MenuBarContent: View {
             }
         }
 
+        Button("Name Desktops…") {
+            openWindow(id: AppWindow.main)
+            model.showSpaces = true
+        }
+
         if !model.lastWarnings.isEmpty {
             Divider()
             Section("Last Restore") {

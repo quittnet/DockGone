@@ -10,7 +10,6 @@ enum Prefs {
     private enum Key {
         static let arrangeShortcuts = "Stagehand.arrangeShortcutsEnabled"
         static let displayTrigger   = "Stagehand.displayChangeProfileID"
-        static let launchTrigger    = "Stagehand.launchRestoreProfileID"
         static let didExplainAX     = "Stagehand.didShowAccessibilityExplainer"
     }
 
@@ -24,12 +23,6 @@ enum Prefs {
     static var displayChangeProfileID: UUID? {
         get { defaults.string(forKey: Key.displayTrigger).flatMap(UUID.init(uuidString:)) }
         set { defaults.set(newValue?.uuidString, forKey: Key.displayTrigger) }
-    }
-
-    /// Profile to restore once shortly after launch / login (nil = off).
-    static var launchRestoreProfileID: UUID? {
-        get { defaults.string(forKey: Key.launchTrigger).flatMap(UUID.init(uuidString:)) }
-        set { defaults.set(newValue?.uuidString, forKey: Key.launchTrigger) }
     }
 
     /// Whether the first-launch Accessibility explainer has already been shown.

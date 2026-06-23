@@ -18,6 +18,7 @@ final class AppModel: ObservableObject {
     @Published var lastWarnings: [String] = []
     @Published var showComposer = false
     @Published var showSettings = false
+    @Published var showSpaces = false
     @Published var isTrusted = AccessibilityManager.isTrusted
 
     private init() {}
@@ -97,6 +98,51 @@ final class AppModel: ObservableObject {
                 self.lastWarnings = outcomes.compactMap { $0.warning }
                 self.isRestoring = false
             }
+        }
+    }
+
+    /// Restore every profile flagged "Open at startup", in order. Only runs when
+    /// Stagehand is set to launch at login (otherwise an "open at startup" flag is
+    /// meaningless) and Accessibility is granted.
+    func restoreStartupProfiles() {
+        guard LoginItem.isEnabled else { return }
+        let ids = store.profiles.filter { $0.openAtStartup }.map { $0.id }
+        guard !ids.isEmpty, !isRestoring, AccessibilityManager.isTrusted else { return }
+        isRestoring = true
+        lastWarnings = []
+        Task {
+            var warnings: [String] = []
+            for id in ids {
+                guard let profile = self.store.profile(id: id) else { continue }
+                let outcomes = await LayoutEngine.restore(profile)
+                warnings.append(contentsOf: outcomes.compactMap { $0.warning })
+            }
+            let collected = warnings
+            await MainActor.run {
+                self.lastWarnings = collected
+                self.isRestoring = false
+            }
+        }
+    }
+
+    // MARK: Mission Control naming
+
+    /// Attempt to name the current Mission Control desktop after a profile.
+    func nameCurrentSpace(after profile: LayoutProfile) {
+        guard SpaceManager.canRename, let spaceID = SpaceManager.currentSpaceID() else {
+            TextPrompt.info(title: "Can't name this desktop",
+                            message: "The private Spaces API isn't available on this macOS, "
+                                + "so the current desktop's name couldn't be set.")
+            return
+        }
+        if SpaceManager.setName(profile.name, for: spaceID) {
+            TextPrompt.info(title: "Named this desktop “\(profile.name)”",
+                            message: "Set at the system level. If Mission Control still shows the "
+                                + "old label, open “Name Desktops…” and use Relaunch Dock to refresh it.")
+        } else {
+            TextPrompt.info(title: "Naming didn't take",
+                            message: "macOS accepted the call but the name didn't stick — Apple may "
+                                + "have changed or removed this private API in your macOS version.")
         }
     }
 
