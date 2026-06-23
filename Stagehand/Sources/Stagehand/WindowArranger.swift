@@ -60,6 +60,48 @@ enum WindowArranger {
         AX.setFrame(window, target(for: action, in: area, current: current))
     }
 
+    // MARK: Compose support
+
+    /// Regions that fully define a frame from a screen alone — excludes `center`
+    /// and `nextDisplay`, which need an existing window. Used by the composer.
+    static let composableRegions: [Action] = [
+        .leftHalf, .rightHalf, .topHalf, .bottomHalf,
+        .topLeft, .topRight, .bottomLeft, .bottomRight,
+        .leftThird, .centerThird, .rightThird, .leftTwoThirds, .rightTwoThirds,
+        .maximize,
+    ]
+
+    /// The AX frame a region maps to on a given screen. The composer uses this to
+    /// bake a composed layout into absolute coordinates at creation time, so it
+    /// then restores through the same path as a captured layout.
+    static func frame(for action: Action, on screen: NSScreen) -> CGRect {
+        let area = axRect(fromCocoa: screen.visibleFrame)
+        return target(for: action, in: area, current: area)
+    }
+
+    /// A region as a unit rectangle in top-left [0,1] space, for drawing the
+    /// composer's preview without referencing a real screen.
+    static func unitRect(for action: Action) -> CGRect {
+        switch action {
+        case .leftHalf:       return CGRect(x: 0,     y: 0,   width: 0.5,     height: 1)
+        case .rightHalf:      return CGRect(x: 0.5,   y: 0,   width: 0.5,     height: 1)
+        case .topHalf:        return CGRect(x: 0,     y: 0,   width: 1,       height: 0.5)
+        case .bottomHalf:     return CGRect(x: 0,     y: 0.5, width: 1,       height: 0.5)
+        case .topLeft:        return CGRect(x: 0,     y: 0,   width: 0.5,     height: 0.5)
+        case .topRight:       return CGRect(x: 0.5,   y: 0,   width: 0.5,     height: 0.5)
+        case .bottomLeft:     return CGRect(x: 0,     y: 0.5, width: 0.5,     height: 0.5)
+        case .bottomRight:    return CGRect(x: 0.5,   y: 0.5, width: 0.5,     height: 0.5)
+        case .leftThird:      return CGRect(x: 0,     y: 0,   width: 1.0 / 3, height: 1)
+        case .centerThird:    return CGRect(x: 1.0/3, y: 0,   width: 1.0 / 3, height: 1)
+        case .rightThird:     return CGRect(x: 2.0/3, y: 0,   width: 1.0 / 3, height: 1)
+        case .leftTwoThirds:  return CGRect(x: 0,     y: 0,   width: 2.0 / 3, height: 1)
+        case .rightTwoThirds: return CGRect(x: 1.0/3, y: 0,   width: 2.0 / 3, height: 1)
+        case .maximize:       return CGRect(x: 0,     y: 0,   width: 1,       height: 1)
+        case .center:         return CGRect(x: 0.2,   y: 0.2, width: 0.6,     height: 0.6)
+        case .nextDisplay:    return CGRect(x: 0,     y: 0,   width: 1,       height: 1)
+        }
+    }
+
     // MARK: Geometry
 
     /// Sub-rectangle of `area` (the screen's visible frame, in AX coordinates)

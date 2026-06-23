@@ -25,6 +25,11 @@ Closing the window keeps it running in the menu bar. Launches at login via
   windows, and repositions them to the saved coordinates.
 - **Multiple named profiles** with a SwiftUI manager window (rename, delete,
   inspect captured windows).
+- **Create Layout** composer: instead of capturing what's open, pick apps from a
+  catalog of everything installed, assign each a screen region (halves, quarters,
+  thirds, maximize…) with a live preview and an **Auto-Tile** button, and save it
+  as a profile. Restoring launches the apps and places them — great for building a
+  workspace from scratch.
 - **Launch at login** via `SMAppService.mainApp` (macOS 13+) — toggle in the menu.
 - **Graceful failures**: an app that's no longer installed (or opens no windows)
   is skipped, and a `⚠︎` summary of what was skipped appears at the bottom of the
@@ -122,13 +127,16 @@ Stagehand/
 ├── make_icon.swift                       generates AppIcon.icns
 ├── install.sh                            build → icon → .app → sign → launch
 └── Sources/Stagehand/
-    ├── main.swift                        accessory entry point
+    ├── main.swift                        app entry point (.regular)
     ├── AppDelegate.swift                 menu bar, save/restore, arrange + automation wiring
+    ├── MainMenu.swift                    standard App / Edit / Window menus
     ├── Models.swift                      Codable profile / app / window model
     ├── AXBridge.swift                    Accessibility + private CGS/AX helpers
     ├── AccessibilityManager.swift        permission checks & explainer prompts
     ├── LayoutEngine.swift                capture + restore logic
     ├── WindowArranger.swift              snap the focused window (halves/quarters/thirds…)
+    ├── AppCatalog.swift                  enumerate installed apps for the composer
+    ├── LayoutComposerView.swift          "Create Layout" — pick apps + regions, preview
     ├── HotKeyManager.swift               Carbon global hotkeys (Rectangle-style defaults)
     ├── Settings.swift                    UserDefaults: shortcut toggle + trigger profiles
     ├── ProfileStore.swift                JSON persistence (Application Support)

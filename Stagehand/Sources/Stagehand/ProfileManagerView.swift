@@ -15,6 +15,7 @@ struct ProfileManagerView: View {
     @State private var selection: UUID?
     @State private var renaming: UUID?
     @State private var renameText: String = ""
+    @State private var showComposer = false
 
     var body: some View {
         NavigationSplitView {
@@ -22,14 +23,7 @@ struct ProfileManagerView: View {
         } detail: {
             detail
         }
-        .frame(minWidth: 620, minHeight: 420)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                headerBar
-                Divider()
-            }
-            .background(.bar)
-        }
+        .frame(minWidth: 640, minHeight: 440)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 0) {
                 Divider()
@@ -37,24 +31,9 @@ struct ProfileManagerView: View {
             }
             .background(.bar)
         }
-    }
-
-    /// A top bar (rendered inside the hosting view, so it doesn't depend on
-    /// SwiftUI's window-toolbar bridging) with the primary capture action.
-    private var headerBar: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "macwindow.on.rectangle").foregroundStyle(.secondary)
-            Text("Stagehand").font(.headline)
-            Spacer()
-            Button {
-                onSaveCurrentLayout()
-            } label: {
-                Label("Save Current Layout", systemImage: "plus.rectangle.on.rectangle")
-            }
-            .help("Capture the current window layout as a new profile")
+        .sheet(isPresented: $showComposer) {
+            LayoutComposerView(store: store)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
     }
 
     /// Shows where profiles live on disk and offers a quick reveal in Finder.
@@ -80,29 +59,54 @@ struct ProfileManagerView: View {
     // MARK: Sidebar
 
     private var sidebar: some View {
-        List(selection: $selection) {
-            ForEach(store.profiles) { profile in
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(profile.name).font(.headline)
-                    Text("\(profile.apps.count) apps · \(profile.windowCount) windows")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        VStack(spacing: 0) {
+            // Primary actions live in the sidebar (not a window toolbar), so they
+            // render reliably in this hand-hosted window and never overlap content.
+            VStack(spacing: 6) {
+                Button {
+                    showComposer = true
+                } label: {
+                    Label("Create Layout…", systemImage: "square.grid.2x2")
+                        .frame(maxWidth: .infinity)
                 }
-                .tag(profile.id)
-                .contextMenu {
-                    Button("Restore") { onRestore(profile) }
-                    Button("Rename") { beginRename(profile) }
-                    Divider()
-                    Button("Delete", role: .destructive) { store.deleteProfile(id: profile.id) }
+                .help("Pick apps and choose how they're arranged, then save as a profile")
+
+                Button {
+                    onSaveCurrentLayout()
+                } label: {
+                    Label("Save Current Layout", systemImage: "plus.rectangle.on.rectangle")
+                        .frame(maxWidth: .infinity)
+                }
+                .help("Capture the current window layout as a new profile")
+            }
+            .buttonStyle(.bordered)
+            .padding(8)
+            Divider()
+
+            List(selection: $selection) {
+                ForEach(store.profiles) { profile in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(profile.name).font(.headline)
+                        Text("\(profile.apps.count) apps · \(profile.windowCount) windows")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .tag(profile.id)
+                    .contextMenu {
+                        Button("Restore") { onRestore(profile) }
+                        Button("Rename") { beginRename(profile) }
+                        Divider()
+                        Button("Delete", role: .destructive) { store.deleteProfile(id: profile.id) }
+                    }
                 }
             }
-        }
-        .overlay {
-            if store.profiles.isEmpty {
-                ContentUnavailableCompat(
-                    title: "No Profiles",
-                    message: "Use “Save current layout…” in the menu bar to create one."
-                )
+            .overlay {
+                if store.profiles.isEmpty {
+                    ContentUnavailableCompat(
+                        title: "No Profiles",
+                        message: "Use “Create Layout…” or “Save Current Layout” above."
+                    )
+                }
             }
         }
         .navigationTitle("Profiles")
