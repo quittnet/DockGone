@@ -78,20 +78,28 @@ enum LayoutEngine {
     /// saved frame. Failures are non-fatal — they become warnings the caller can
     /// surface in the menu.
     static func restore(_ profile: LayoutProfile) async -> [RestoreOutcome] {
-        var outcomes: [RestoreOutcome] = []
-        for savedApp in profile.apps {
-            outcomes.append(await restore(app: savedApp))
+        // Restore apps concurrently: each one independently launches (if needed),
+        // waits up to ~10s for its windows, and repositions them. Done serially
+        // that latency would stack — a profile with several cold-launching apps
+        // would take tens of seconds. The task index is carried through so the
+        // outcomes (and thus the menu's warning list) stay in profile order.
+        await withTaskGroup(of: (Int, RestoreOutcome).self) { group in
+            for (index, savedApp) in profile.apps.enumerated() {
+                group.addTask { (index, await restore(app: savedApp)) }
+            }
+            var indexed: [(Int, RestoreOutcome)] = []
+            for await result in group { indexed.append(result) }
+            return indexed.sorted { $0.0 < $1.0 }.map { $0.1 }
         }
-        return outcomes
     }
 
     private static func restore(app savedApp: SavedApp) async -> RestoreOutcome {
-        // 1. Make sure the app is running, launching it if necessary.
-        let runningApp: NSRunningApplication
-        if let existing = NSRunningApplication
-            .runningApplications(withBundleIdentifier: savedApp.bundleID).first {
-            runningApp = existing
-        } else {
+        // 1. Gather every running instance of this bundle id, launching one if
+        //    none exist. Pooling all instances (rather than guessing with .first)
+        //    means it doesn't matter which process owns which window when an app
+        //    runs more than once — saved windows match against the union.
+        var instances = NSRunningApplication.runningApplications(withBundleIdentifier: savedApp.bundleID)
+        if instances.isEmpty {
             guard let url = resolveAppURL(for: savedApp) else {
                 return RestoreOutcome(appName: savedApp.name, positioned: 0,
                                       warning: "\(savedApp.name) isn't installed — skipped")
@@ -99,7 +107,8 @@ enum LayoutEngine {
             do {
                 let config = NSWorkspace.OpenConfiguration()
                 config.activates = false
-                runningApp = try await NSWorkspace.shared.openApplication(at: url, configuration: config)
+                let launched = try await NSWorkspace.shared.openApplication(at: url, configuration: config)
+                instances = [launched]
             } catch {
                 return RestoreOutcome(appName: savedApp.name, positioned: 0,
                                       warning: "\(savedApp.name) failed to launch — skipped")
@@ -111,12 +120,11 @@ enum LayoutEngine {
         //    can neither satisfy the wait nor absorb a saved frame. Newly launched
         //    apps take a beat — poll up to ~10s (heavy apps cold-launch slowly),
         //    then give up gracefully.
-        let appElement = AXUIElementCreateApplication(runningApp.processIdentifier)
-        var liveWindows = standardWindows(of: appElement)
+        var liveWindows = standardWindows(of: instances)
         var attempts = 0
         while liveWindows.isEmpty && attempts < 40 {
             try? await Task.sleep(nanoseconds: 250_000_000)
-            liveWindows = standardWindows(of: appElement)
+            liveWindows = standardWindows(of: instances)
             attempts += 1
         }
         guard !liveWindows.isEmpty else {
@@ -145,10 +153,15 @@ enum LayoutEngine {
         return RestoreOutcome(appName: savedApp.name, positioned: positioned, warning: warning)
     }
 
-    /// An app's standard document/app windows — the same filter capture uses, so
-    /// restore never targets a palette or sheet.
-    private static func standardWindows(of appElement: AXUIElement) -> [AXUIElement] {
-        AX.windows(of: appElement).filter { AX.isStandardWindow($0) }
+    /// The standard document/app windows pooled across every running instance of
+    /// an app — the same filter capture uses, so restore never targets a palette
+    /// or sheet, and multiple instances of one bundle id contribute their windows
+    /// to a single candidate set.
+    private static func standardWindows(of instances: [NSRunningApplication]) -> [AXUIElement] {
+        instances.flatMap { app -> [AXUIElement] in
+            let element = AXUIElementCreateApplication(app.processIdentifier)
+            return AX.windows(of: element).filter { AX.isStandardWindow($0) }
+        }
     }
 
     /// Pair each saved window with a live window in two passes: first by exact

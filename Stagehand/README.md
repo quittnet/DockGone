@@ -68,11 +68,14 @@ them only drops the optional Space annotation.
 
 ### Restore
 
-For each saved app Stagehand finds it running or launches it
-(`NSWorkspace.openApplication`, resolved by bundle id with the captured path as a
-fallback), polls up to ~10s for its windows to appear, matches saved windows to
-live ones (standard windows only — exact title first, then positionally for the
-rest), and applies the saved frame via the Accessibility API.
+Saved apps are restored concurrently (a `TaskGroup`), so several cold-launching
+apps don't stack their wait times; outcomes are re-ordered to match the profile
+for the warning list. For each app, Stagehand finds every running instance of the
+bundle id or launches one (`NSWorkspace.openApplication`, resolved by bundle id
+with the captured path as a fallback), polls up to ~10s for windows to appear,
+and matches saved windows against the pooled standard windows of all instances —
+exact title first, then positionally for the rest — applying the saved frame via
+the Accessibility API.
 
 ### Coordinates & Spaces
 
