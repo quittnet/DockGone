@@ -13,6 +13,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// True while a restore is running, to disable re-entry and show progress.
     private var isRestoring = false
 
+    /// Debounces the display-change trigger — displays fire several notifications
+    /// as they settle, and we only want to restore once.
+    private var displayChangeWork: DispatchWorkItem?
+
     private let firstLaunchKey = "Stagehand.didShowAccessibilityExplainer"
 
     // MARK: Lifecycle
@@ -23,6 +27,52 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.beginRestore(profile)
         }
         requestAccessibilityIfFirstLaunch()
+        applyArrangeShortcuts()
+        observeDisplayChanges()
+        scheduleLaunchRestore()
+    }
+
+    // MARK: Automation (Moom-style triggers + global snap shortcuts)
+
+    /// Register or tear down the global window-snap hotkeys to match the setting.
+    private func applyArrangeShortcuts() {
+        if Settings.arrangeShortcutsEnabled {
+            HotKeyManager.shared.registerArrangeShortcuts { WindowArranger.apply($0) }
+        } else {
+            HotKeyManager.shared.unregisterAll()
+        }
+    }
+
+    private func observeDisplayChanges() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(displaysChanged),
+            name: NSApplication.didChangeScreenParametersNotification, object: nil)
+    }
+
+    /// When the display arrangement changes (a monitor connected/disconnected, a
+    /// resolution change), re-apply the chosen profile once things settle.
+    @objc private func displaysChanged() {
+        guard let id = Settings.displayChangeProfileID,
+              let profile = ProfileStore.shared.profile(id: id) else { return }
+        displayChangeWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard AccessibilityManager.isTrusted else { return }
+            self?.beginRestore(profile)
+        }
+        displayChangeWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
+    }
+
+    /// Shortly after launch (e.g. at login), restore the designated profile so a
+    /// fresh session comes up arranged. Skipped silently until Accessibility is
+    /// granted.
+    private func scheduleLaunchRestore() {
+        guard let id = Settings.launchRestoreProfileID,
+              let profile = ProfileStore.shared.profile(id: id) else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard AccessibilityManager.isTrusted else { return }
+            self?.beginRestore(profile)
+        }
     }
 
     /// On first launch only, explain the Accessibility requirement before the
@@ -92,6 +142,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         manage.target = self
         menu.addItem(manage)
 
+        // — Window arranging (Moom/Magnet/Rectangle-style) + automation —
+        menu.addItem(.separator())
+        menu.addItem(makeArrangeSubmenuItem())
+        menu.addItem(makeAutomationSubmenuItem())
+
         // — Last-restore warnings —
         if !lastRestoreWarnings.isEmpty {
             menu.addItem(.separator())
@@ -132,6 +187,84 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                               action: #selector(NSApplication.terminate(_:)),
                               keyEquivalent: "q")
         menu.addItem(quit)
+    }
+
+    // MARK: Submenu builders
+
+    private func makeArrangeSubmenuItem() -> NSMenuItem {
+        let item = NSMenuItem(title: "Arrange Window", action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+
+        // Visually grouped like the popular snappers: halves, quarters, thirds,
+        // and the catch-all maximize/center/next-display. Rows stay enabled even
+        // without Accessibility so a click surfaces the permission prompt.
+        let groups: [[WindowArranger.Action]] = [
+            [.leftHalf, .rightHalf, .topHalf, .bottomHalf],
+            [.topLeft, .topRight, .bottomLeft, .bottomRight],
+            [.leftThird, .centerThird, .rightThird, .leftTwoThirds, .rightTwoThirds],
+            [.maximize, .center, .nextDisplay],
+        ]
+        for (index, group) in groups.enumerated() {
+            if index > 0 { submenu.addItem(.separator()) }
+            for action in group {
+                let label = Shortcut.binding(for: action)?.label
+                let title = label.map { "\(action.title)   \($0)" } ?? action.title
+                let row = NSMenuItem(title: title, action: #selector(arrangeWindow(_:)),
+                                     keyEquivalent: "")
+                row.target = self
+                row.representedObject = action.rawValue
+                submenu.addItem(row)
+            }
+        }
+        item.submenu = submenu
+        return item
+    }
+
+    private func makeAutomationSubmenuItem() -> NSMenuItem {
+        let item = NSMenuItem(title: "Automation", action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+
+        let shortcuts = NSMenuItem(title: "Window Snap Shortcuts",
+                                   action: #selector(toggleArrangeShortcuts), keyEquivalent: "")
+        shortcuts.target = self
+        shortcuts.state = Settings.arrangeShortcutsEnabled ? .on : .off
+        shortcuts.toolTip = "Global Control-Option shortcuts to snap the focused window."
+        submenu.addItem(shortcuts)
+
+        submenu.addItem(.separator())
+        let displayHeader = NSMenuItem(title: "Restore on Display Change", action: nil, keyEquivalent: "")
+        displayHeader.isEnabled = false
+        submenu.addItem(displayHeader)
+        addProfilePicker(to: submenu, selected: Settings.displayChangeProfileID,
+                         action: #selector(setDisplayTriggerProfile(_:)))
+
+        submenu.addItem(.separator())
+        let launchHeader = NSMenuItem(title: "Restore at Launch", action: nil, keyEquivalent: "")
+        launchHeader.isEnabled = false
+        submenu.addItem(launchHeader)
+        addProfilePicker(to: submenu, selected: Settings.launchRestoreProfileID,
+                         action: #selector(setLaunchTriggerProfile(_:)))
+
+        item.submenu = submenu
+        return item
+    }
+
+    /// Adds an "Off" row plus one checkable row per profile; the checked row is
+    /// the currently selected trigger profile.
+    private func addProfilePicker(to menu: NSMenu, selected: UUID?, action: Selector) {
+        let off = NSMenuItem(title: "  Off", action: action, keyEquivalent: "")
+        off.target = self
+        off.representedObject = ""
+        off.state = (selected == nil) ? .on : .off
+        menu.addItem(off)
+
+        for profile in ProfileStore.shared.profiles {
+            let row = NSMenuItem(title: "  \(profile.name)", action: action, keyEquivalent: "")
+            row.target = self
+            row.representedObject = profile.id.uuidString
+            row.state = (selected == profile.id) ? .on : .off
+            menu.addItem(row)
+        }
     }
 
     // MARK: Actions
@@ -182,6 +315,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func showProfileManager() {
         ProfileManagerWindowController.shared.show()
+    }
+
+    @objc private func arrangeWindow(_ sender: NSMenuItem) {
+        guard ensureTrusted(for: "arrange the window") else { return }
+        guard let raw = sender.representedObject as? String,
+              let action = WindowArranger.Action(rawValue: raw) else { return }
+        WindowArranger.apply(action)
+    }
+
+    @objc private func toggleArrangeShortcuts() {
+        Settings.arrangeShortcutsEnabled.toggle()
+        applyArrangeShortcuts()
+    }
+
+    @objc private func setDisplayTriggerProfile(_ sender: NSMenuItem) {
+        Settings.displayChangeProfileID = profileID(from: sender)
+    }
+
+    @objc private func setLaunchTriggerProfile(_ sender: NSMenuItem) {
+        Settings.launchRestoreProfileID = profileID(from: sender)
+    }
+
+    /// A menu item's represented profile id, or nil for the "Off" row.
+    private func profileID(from sender: NSMenuItem) -> UUID? {
+        guard let raw = sender.representedObject as? String, !raw.isEmpty else { return nil }
+        return UUID(uuidString: raw)
     }
 
     @objc private func openAccessibilitySettings() {

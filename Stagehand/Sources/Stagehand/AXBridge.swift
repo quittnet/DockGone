@@ -105,6 +105,15 @@ enum AX {
         var wid = CGWindowID(0)
         return _AXUIElementGetWindow(window, &wid) == .success ? wid : nil
     }
+
+    /// The app's focused (frontmost) window, used by the arrange commands so they
+    /// act on whatever the user is looking at.
+    static func focusedWindow(of appElement: AXUIElement) -> AXUIElement? {
+        guard let value = copyAttribute(appElement, kAXFocusedWindowAttribute as String),
+              CFGetTypeID(value) == AXUIElementGetTypeID()
+        else { return nil }
+        return (value as! AXUIElement)
+    }
 }
 
 // MARK: - Spaces & displays

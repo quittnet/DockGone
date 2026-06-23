@@ -11,7 +11,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Stagehand",
-            path: "Sources/Stagehand"
+            path: "Sources/Stagehand",
+            // Carbon's RegisterEventHotKey is the only way an .accessory app
+            // (which never becomes key) can receive system-wide hotkeys.
+            linkerSettings: [.linkedFramework("Carbon")]
         )
     ]
 )

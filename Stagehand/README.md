@@ -26,6 +26,30 @@ Menu-bar only: no Dock icon, no ⌘-Tab entry. Launches at login via `SMAppServi
   is skipped, and a `⚠︎` summary of what was skipped appears at the bottom of the
   menu after a restore.
 
+### Window arranging (Moom / Magnet / Rectangle-style)
+
+Beyond whole-desktop profiles, **Arrange Window** snaps the *frontmost* window into
+a region of its screen, with global keyboard shortcuts on the familiar
+Control+Option layout (Rectangle's defaults). Toggle the shortcuts under
+**Automation ▸ Window Snap Shortcuts**.
+
+| Action | Shortcut | Action | Shortcut |
+|---|---|---|---|
+| Left / Right half | `⌃⌥←` / `⌃⌥→` | Top-left … bottom-right quarter | `⌃⌥U I J K` |
+| Top / Bottom half | `⌃⌥↑` / `⌃⌥↓` | Left / Center / Right third | `⌃⌥D F G` |
+| Maximize | `⌃⌥↩` | Left / Right two-thirds | `⌃⌥E` / `⌃⌥T` |
+| Center | `⌃⌥C` | Move to next display | `⌃⌥⌘→` |
+
+### Automation triggers (Moom-style)
+
+Under the **Automation** submenu you can wire a profile to a trigger:
+
+- **Restore on Display Change** — re-applies the chosen profile (debounced) when a
+  monitor connects/disconnects or the arrangement changes, so docking/undocking a
+  laptop snaps everything back into place. This is Moom's signature feature.
+- **Restore at Launch** — applies a chosen profile shortly after login, pairing
+  naturally with *Launch at login*.
+
 ## Requirements
 
 - macOS 13 (Ventura) or later.
@@ -89,16 +113,20 @@ doesn't attempt it (windows are positioned on the current Space).
 
 ```
 Stagehand/
-├── Package.swift
+├── Package.swift                         (links Carbon for global hotkeys)
 ├── Resources/Info.plist                  LSUIElement bundle metadata
-├── install.sh                            build → .app → sign → launch
+├── make_icon.swift                       generates AppIcon.icns
+├── install.sh                            build → icon → .app → sign → launch
 └── Sources/Stagehand/
     ├── main.swift                        accessory entry point
-    ├── AppDelegate.swift                 menu bar, save/restore wiring, prompts
+    ├── AppDelegate.swift                 menu bar, save/restore, arrange + automation wiring
     ├── Models.swift                      Codable profile / app / window model
     ├── AXBridge.swift                    Accessibility + private CGS/AX helpers
     ├── AccessibilityManager.swift        permission checks & explainer prompts
     ├── LayoutEngine.swift                capture + restore logic
+    ├── WindowArranger.swift              snap the focused window (halves/quarters/thirds…)
+    ├── HotKeyManager.swift               Carbon global hotkeys (Rectangle-style defaults)
+    ├── Settings.swift                    UserDefaults: shortcut toggle + trigger profiles
     ├── ProfileStore.swift                JSON persistence (Application Support)
     ├── LoginItem.swift                   SMAppService launch-at-login
     ├── ProfileManagerView.swift          SwiftUI manager UI
