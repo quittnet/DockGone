@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>Stagehand</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.user.stagehand</string>
+    <key>CFBundleName</key>
+    <string>Stagehand</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <!-- Full app: shows in the Dock with a main window, and also installs a
+         menu-bar item. (Set LSUIElement to true to make it menu-bar-only.) -->
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <!-- Shown in the system Accessibility prompt. -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Stagehand needs to control your app windows to save and restore their positions and sizes.</string>
+</dict>
+</plist>
