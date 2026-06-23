@@ -12,6 +12,8 @@ final class ProfileManagerWindowController: NSWindowController {
     /// progress/warning path as the menu.
     var onRestore: ((LayoutProfile) -> Void)?
 
+    private var didInstallContent = false
+
     private init() {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 640, height: 440),
@@ -29,14 +31,20 @@ final class ProfileManagerWindowController: NSWindowController {
 
     func show() {
         // Build the SwiftUI host once and keep it. Rebuilding on every open would
-        // throw away the view's @State (current selection, an in-progress rename)
-        // each time the window is reopened. onRestore is read lazily inside the
-        // closure, so installing it after init is fine.
-        if window?.contentView == nil {
+        // throw away the view's @State (current selection, an in-progress rename).
+        // Track this with a flag rather than `contentView == nil` — a freshly
+        // created NSWindow already ships with a default empty contentView, so the
+        // nil check never fired and the window came up blank. onRestore is read
+        // lazily inside the closure, so installing it after init is fine.
+        if !didInstallContent {
             let view = ProfileManagerView(store: ProfileStore.shared) { [weak self] profile in
                 self?.onRestore?(profile)
             }
-            window?.contentView = NSHostingView(rootView: view)
+            let host = NSHostingView(rootView: view)
+            host.frame = window?.contentView?.bounds ?? .zero
+            host.autoresizingMask = [.width, .height]
+            window?.contentView = host
+            didInstallContent = true
         }
         NSApp.activate(ignoringOtherApps: true)
         showWindow(nil)

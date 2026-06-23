@@ -15,16 +15,19 @@ struct ProfileManagerView: View {
     @State private var renameText: String = ""
 
     var body: some View {
-        VStack(spacing: 0) {
-            NavigationSplitView {
-                sidebar
-            } detail: {
-                detail
-            }
-            Divider()
-            storageFooter
+        NavigationSplitView {
+            sidebar
+        } detail: {
+            detail
         }
         .frame(minWidth: 620, minHeight: 420)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 0) {
+                Divider()
+                storageFooter
+            }
+            .background(.bar)
+        }
     }
 
     /// Shows where profiles live on disk and offers a quick reveal in Finder.

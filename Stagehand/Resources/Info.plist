@@ -8,6 +8,8 @@
     <string>com.user.stagehand</string>
     <key>CFBundleName</key>
     <string>Stagehand</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
