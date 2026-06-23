@@ -9,6 +9,8 @@ struct ProfileManagerView: View {
     /// Restore is owned by the AppDelegate (it tracks progress + warnings), so
     /// the view asks for it through a closure rather than calling the engine.
     var onRestore: (LayoutProfile) -> Void
+    /// Capture + name a new profile (reuses the menu bar's prompt flow).
+    var onSaveCurrentLayout: () -> Void
 
     @State private var selection: UUID?
     @State private var renaming: UUID?
@@ -21,6 +23,13 @@ struct ProfileManagerView: View {
             detail
         }
         .frame(minWidth: 620, minHeight: 420)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                headerBar
+                Divider()
+            }
+            .background(.bar)
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 0) {
                 Divider()
@@ -28,6 +37,24 @@ struct ProfileManagerView: View {
             }
             .background(.bar)
         }
+    }
+
+    /// A top bar (rendered inside the hosting view, so it doesn't depend on
+    /// SwiftUI's window-toolbar bridging) with the primary capture action.
+    private var headerBar: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "macwindow.on.rectangle").foregroundStyle(.secondary)
+            Text("Stagehand").font(.headline)
+            Spacer()
+            Button {
+                onSaveCurrentLayout()
+            } label: {
+                Label("Save Current Layout", systemImage: "plus.rectangle.on.rectangle")
+            }
+            .help("Capture the current window layout as a new profile")
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
     }
 
     /// Shows where profiles live on disk and offers a quick reveal in Finder.

@@ -42,8 +42,9 @@ pkill -x Stagehand 2>/dev/null || true
 open "$APP"
 
 echo ""
-echo "Done. Stagehand is running in your menu bar (look for the window icon)."
+echo "Done. Stagehand is running — its window is open and it's in the Dock and the"
+echo "menu bar. Closing the window keeps it running as a menu-bar item."
 echo ""
 echo "Next steps:"
 echo "  1. Grant Accessibility: System Settings ▸ Privacy & Security ▸ Accessibility → enable Stagehand"
-echo "  2. Open profiles, save a layout, and toggle “Launch at Login” from the menu."
+echo "  2. Save a layout (window toolbar or menu bar) and toggle “Launch at Login.”"

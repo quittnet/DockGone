@@ -12,6 +12,10 @@ final class ProfileManagerWindowController: NSWindowController {
     /// progress/warning path as the menu.
     var onRestore: ((LayoutProfile) -> Void)?
 
+    /// Set by AppDelegate so the window's "Save Current Layout" button reuses the
+    /// same capture + name-prompt flow as the menu bar.
+    var onSaveCurrentLayout: (() -> Void)?
+
     private var didInstallContent = false
 
     private init() {
@@ -37,9 +41,11 @@ final class ProfileManagerWindowController: NSWindowController {
         // nil check never fired and the window came up blank. onRestore is read
         // lazily inside the closure, so installing it after init is fine.
         if !didInstallContent {
-            let view = ProfileManagerView(store: ProfileStore.shared) { [weak self] profile in
-                self?.onRestore?(profile)
-            }
+            let view = ProfileManagerView(
+                store: ProfileStore.shared,
+                onRestore: { [weak self] profile in self?.onRestore?(profile) },
+                onSaveCurrentLayout: { [weak self] in self?.onSaveCurrentLayout?() }
+            )
             let host = NSHostingView(rootView: view)
             host.frame = window?.contentView?.bounds ?? .zero
             host.autoresizingMask = [.width, .height]

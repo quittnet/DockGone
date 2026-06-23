@@ -22,14 +22,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Lifecycle
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        MainMenu.install(appName: "Stagehand")
         setupMenuBar()
         ProfileManagerWindowController.shared.onRestore = { [weak self] profile in
             self?.beginRestore(profile)
+        }
+        ProfileManagerWindowController.shared.onSaveCurrentLayout = { [weak self] in
+            self?.saveCurrentLayout()
         }
         requestAccessibilityIfFirstLaunch()
         applyArrangeShortcuts()
         observeDisplayChanges()
         scheduleLaunchRestore()
+
+        // Full-app behaviour: show the main window on launch and focus the app.
+        ProfileManagerWindowController.shared.show()
+    }
+
+    // Stagehand keeps running as a menu-bar item after its window is closed —
+    // closing the window shouldn't quit the app.
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        false
+    }
+
+    // Clicking the Dock icon (when no window is open) reopens the main window.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { ProfileManagerWindowController.shared.show() }
+        return true
     }
 
     // MARK: Automation (Moom-style triggers + global snap shortcuts)

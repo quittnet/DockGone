@@ -1,11 +1,15 @@
 # Stagehand
 
-A macOS menu-bar app that **saves and restores window layout profiles**. Arrange
-your windows once, save the arrangement as a named profile ("Work", "Study",
-"Deep Focus"), and restore it later with one click — Stagehand reopens the apps
-that aren't running and moves every window back to where it was.
+A macOS app that **saves and restores window layout profiles**. Arrange your
+windows once, save the arrangement as a named profile ("Work", "Study", "Deep
+Focus"), and restore it later with one click — Stagehand reopens the apps that
+aren't running and moves every window back to where it was.
 
-Menu-bar only: no Dock icon, no ⌘-Tab entry. Launches at login via `SMAppService`.
+It's a **full Dock app with a main window** *and* a **menu-bar item**: use the
+window for managing profiles, or the bar item for quick save/restore/arrange.
+Closing the window keeps it running in the menu bar. Launches at login via
+`SMAppService`. (Prefer menu-bar-only? Set `LSUIElement` to `true` in
+`Resources/Info.plist`.)
 
 > Lives in the same repo as **DockGone** but is a separate, self-contained app
 > (its own `Package.swift` under `Stagehand/`). DockGone is untouched.

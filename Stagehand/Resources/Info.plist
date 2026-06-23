@@ -18,9 +18,8 @@
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
-    <!-- No Dock icon / no ⌘-Tab entry: menu-bar-only agent. -->
-    <key>LSUIElement</key>
-    <true/>
+    <!-- Full app: shows in the Dock with a main window, and also installs a
+         menu-bar item. (Set LSUIElement to true to make it menu-bar-only.) -->
     <key>NSHighResolutionCapable</key>
     <true/>
     <!-- Shown in the system Accessibility prompt. -->
