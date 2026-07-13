@@ -417,11 +417,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Menu Bar
 
+    // The SF Symbol dock.rectangle reads as a battery outline at menu-bar
+    // size (and with the red attention dot, as a battery warning), so draw
+    // an unambiguous dock instead: three app tiles sitting on a shelf.
+    private static func menuBarIcon() -> NSImage {
+        let img = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { _ in
+            NSColor.black.setFill()
+            NSBezierPath(roundedRect: NSRect(x: 1.5, y: 5.5, width: 15, height: 1.5),
+                         xRadius: 0.75, yRadius: 0.75).fill()
+            let tile: CGFloat = 4
+            let gap = (15 - 3 * tile) / 2
+            for i in 0..<3 {
+                let x = 1.5 + CGFloat(i) * (tile + gap)
+                NSBezierPath(roundedRect: NSRect(x: x, y: 8.5, width: tile, height: tile),
+                             xRadius: 1.1, yRadius: 1.1).fill()
+            }
+            return true
+        }
+        img.isTemplate = true
+        img.accessibilityDescription = "Dock Launcher"
+        return img
+    }
+
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let btn = statusItem?.button {
-            btn.image = NSImage(systemSymbolName: "dock.rectangle",
-                                accessibilityDescription: "Dock Launcher")
+            btn.image = Self.menuBarIcon()
             installAttentionDot(in: btn)
         }
         let menu = NSMenu()
