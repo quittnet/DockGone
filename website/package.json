@@ -1,0 +1,13 @@
+{
+  "name": "jbecs-group-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Image-free sample rebuild of the JBECS Group website, ready for Cloudflare Pages.",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy . --project-name=jbecs-group"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

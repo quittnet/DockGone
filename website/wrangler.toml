@@ -1,0 +1,7 @@
+# Cloudflare Pages configuration for the JBECS Group sample site.
+# This is a static site — no build step is required.
+name = "jbecs-group"
+compatibility_date = "2026-07-21"
+
+# The directory of static assets to deploy. "." = this folder.
+pages_build_output_dir = "."
